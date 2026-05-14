@@ -202,18 +202,7 @@
         }
         .tab-nav::-webkit-scrollbar { display: none; }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 16px 32px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: var(--font-body);
-            transition: all 0.3s ease;
-            border-bottom: 3px solid transparent;
-        }
+        /* .tab-btn defined once below */
 
         .tab-btn.active {
             color: var(--accent-light);
@@ -1474,8 +1463,20 @@
                 <input type="file" id="headerLogoUpload" style="display: none;" accept="image/*" onchange="uploadHeaderLogo(event)">
             </div>
             <div class="tournament-title" onclick="editTournamentName()" style="font-size:clamp(1rem,2vw,2rem);letter-spacing:clamp(1px,0.3vw,4px);">FUNDADORES POKER CLUB</div>
-            <div style="display:flex;align-items:center;gap:12px;">
-                <div class="tournament-info" id="tournamentInfo" style="font-size:clamp(0.75rem,1.2vw,1.3rem);">Buy-in: R$ 60 | 16 Jogadores</div>
+            <div style="display:flex;align-items:center;gap:clamp(6px,1vmin,12px);flex-shrink:0;">
+                <div id="liveClock" style="font-family:var(--font-mono);font-size:clamp(0.75rem,1.3vmin,1.1rem);
+                    color:var(--accent-color);white-space:nowrap;letter-spacing:1px;"></div>
+                <div class="tournament-info" id="tournamentInfo" style="font-size:clamp(0.65rem,1.1vmin,1rem);white-space:nowrap;">Buy-in: R$ 60 | 16 Jogadores</div>
+                <button id="muteBtn" onclick="toggleMute()" title="Desativar som" style="
+                    background:rgba(212,175,55,0.15);border:2px solid var(--accent-color);
+                    color:var(--accent-light);width:clamp(28px,3vmin,40px);height:clamp(28px,3vmin,40px);
+                    border-radius:8px;cursor:pointer;font-size:clamp(12px,1.4vmin,18px);
+                    display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0;">🔊</button>
+                <button id="projectorBtn" onclick="openProjector()" title="Abrir modo projetor" style="
+                    background:rgba(212,175,55,0.15);border:2px solid var(--accent-color);
+                    color:var(--accent-light);padding:0 clamp(8px,1.2vmin,14px);height:clamp(28px,3vmin,40px);
+                    border-radius:8px;cursor:pointer;font-size:clamp(10px,1.2vmin,14px);font-weight:700;
+                    white-space:nowrap;transition:all 0.2s;flex-shrink:0;">📺 Projetor</button>
                 <button id="fullscreenBtn" onclick="toggleFullscreen()" title="Tela cheia" style="
                     background:rgba(212,175,55,0.15);
                     border:2px solid var(--accent-color);
@@ -1485,7 +1486,7 @@
                     display:flex;align-items:center;justify-content:center;
                     transition:all 0.3s;flex-shrink:0;
                 " onmouseover="this.style.background='rgba(212,175,55,0.35)'" 
-                   onmouseout="this.style.background='rgba(212,175,55,0.15)'">⛶</button>
+                   onmouseout="this.style.background='rgba(212,175,55,0.15)'">⤢</button>
             </div>
         </div>
     </div>
@@ -1712,6 +1713,8 @@
                     </small>
                 </div>
                 
+                <div id="payoutPctWarning" style="display:none;padding:10px 16px;border-radius:8px;
+                    background:rgba(0,0,0,0.3);margin-bottom:12px;font-weight:700;font-size:0.95rem;"></div>
                 <div class="payout-list" id="payoutList">
                     <!-- Preenchido via JavaScript -->
                 </div>
@@ -2177,17 +2180,13 @@
 
         function applyAutoAnte() {
             if (!gameState.autoAnte) return;
-            
-            let anteStarted = false;
-            structure.forEach(level => {
-                if (level.type === 'normal') {
-                    // Se já existe ante em algum nível, começa a aplicar
-                    if (level.ante > 0) anteStarted = true;
-                    
-                    // Se ante já começou, aplica ante = big blind
-                    if (anteStarted) {
-                        level.ante = level.bb;
-                    }
+            // Find the first normal level with ante > 0
+            let firstAnteIdx = structure.findIndex(l => l.type === 'normal' && l.ante > 0);
+            if (firstAnteIdx === -1) return; // none set yet — nothing to propagate
+            // From that level onwards, ante = bb
+            structure.forEach((level, i) => {
+                if (i >= firstAnteIdx && level.type === 'normal') {
+                    level.ante = level.bb;
                 }
             });
         }
@@ -2197,9 +2196,12 @@
             if (minutes >= 60) {
                 const h = Math.floor(minutes / 60);
                 const m = minutes % 60;
-                return m > 0 ? `${h}h${m.toString().padStart(2,'0')}m` : `${h}h`;
+                return m > 0 ? `${h}h ${m.toString().padStart(2,'0')}m` : `${h}h`;
             }
-            return minutes + 'm';
+            const s = minutes * 60;
+            const mm = Math.floor(s / 60);
+            const ss = s % 60;
+            return `${mm.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}`;
         }
 
         function renderNextLevels() {
@@ -2319,6 +2321,7 @@
             }
             
             updateDisplay();
+            sendProjectorUpdate();
         }
 
         function toggleTimer() {
@@ -2345,16 +2348,29 @@
 
         function nextLevel(auto = false) {
             if (gameState.currentLevel < structure.length - 1) {
-                gameState.currentLevel++;
-                gameState.timeLeft = structure[gameState.currentLevel].duration * 60;
+                const nextIdx = gameState.currentLevel + 1;
+                const entering = structure[nextIdx];
+                gameState.currentLevel = nextIdx;
+                gameState.timeLeft = entering.duration * 60;
                 
                 if (auto) {
-                    setTimeout(() => beep(660, 150), 0);
-                    setTimeout(() => beep(880, 150), 200);
-                    setTimeout(() => beep(1100, 300), 400);
+                    if (entering.type === 'break') {
+                        beepBreak(); // #13 — som especial para intervalo
+                    } else {
+                        setTimeout(() => beep(660, 150), 0);
+                        setTimeout(() => beep(880, 150), 200);
+                        setTimeout(() => beep(1100, 300), 400);
+                    }
+                    showNextLevelPreview(entering); // #12 — preview dos blinds
+                }
+
+                // #8 — aviso de último nível
+                if (gameState.currentLevel === structure.length - 1) {
+                    showLastLevelWarning();
                 }
                 
                 updateDisplay();
+                saveState();
             }
         }
 
@@ -2460,30 +2476,39 @@
         function updateStructure(index, field, value) {
             structure[index][field] = parseInt(value) || 0;
             
-            // Se alterou o big blind e tem ante ativo, atualiza ante automaticamente
-            if (field === 'bb' && gameState.autoAnte && structure[index].ante > 0) {
-                structure[index].ante = structure[index].bb;
-                renderStructureConfig();
+            if (gameState.autoAnte) {
+                // Qualquer mudança de bb ou ante dispara o recálculo completo
+                if (field === 'bb' || field === 'ante') {
+                    applyAutoAnte();
+                    renderStructureConfig();
+                }
             }
             
             if (index === gameState.currentLevel && field === 'duration') {
                 gameState.timeLeft = Math.min(gameState.timeLeft, parseInt(value) * 60);
             }
             updateDisplay();
+            saveState();
         }
 
         // Structure management
         function addLevel() {
+            const lastNormal = [...structure].reverse().find(l => l.type === 'normal');
+            const newBB = lastNormal ? lastNormal.bb * 2 : 200;
+            const newSB = Math.round(newBB / 2);
             const newLevel = {
                 level: structure.filter(s => s.type === 'normal').length + 1,
-                sb: 100,
-                bb: 200,
-                ante: gameState.autoAnte ? 200 : 0, // Se auto-ante ativo, já começa com ante
-                duration: 15,
+                sb: newSB,
+                bb: newBB,
+                ante: 0,
+                duration: lastNormal ? lastNormal.duration : 15,
                 type: 'normal'
             };
             structure.push(newLevel);
+            applyAutoAnte(); // propagate ante if autoAnte on
             renderStructureConfig();
+            updateDisplay();
+            saveState();
         }
 
         function addBreak() {
@@ -2549,6 +2574,13 @@
             gameState.fee = parseInt(document.getElementById('feeInput').value) || 0;
             gameState.startingChips = parseInt(document.getElementById('startingChipsInput').value) || 5000;
             
+            // Sync chipsState so Fichas tab stays accurate
+            chipsState.totalPlayers  = gameState.totalPlayers;
+            chipsState.activePlayers = gameState.totalPlayers - gameState.eliminated;
+            chipsState.startStack    = gameState.startingChips;
+            if (document.getElementById('chipStartStack'))
+                document.getElementById('chipStartStack').value = gameState.startingChips;
+            
             updateDisplay();
             renderPayouts();
         }
@@ -2595,6 +2627,22 @@
                 list.appendChild(div);
             });
 
+            // Validate total percentage
+            const totalPct = payouts.reduce((s, p) => s + (p.percent || 0), 0);
+            const pctWarning = document.getElementById('payoutPctWarning');
+            if (pctWarning) {
+                if (totalPct > 100) {
+                    pctWarning.textContent = `⚠️ Total: ${totalPct}% — ultrapassa 100%!`;
+                    pctWarning.style.display = 'block';
+                    pctWarning.style.color = '#ff3366';
+                } else if (totalPct < 100) {
+                    pctWarning.textContent = `ℹ️ Total: ${totalPct}% — faltam ${100-totalPct}%`;
+                    pctWarning.style.display = 'block';
+                    pctWarning.style.color = '#ffd700';
+                } else {
+                    pctWarning.style.display = 'none';
+                }
+            }
             // Always sync ticker immediately — no delay
             updateTicker();
             saveState();
@@ -2798,12 +2846,23 @@
 
         // Storage
         function saveState() {
-            localStorage.setItem('fpc-tournament', JSON.stringify({ 
-                gameState, 
-                structure, 
-                payouts, 
-                visualSettings 
-            }));
+            try {
+                // Never save base64 blobs into localStorage — they bloat it past 5MB limit
+                const safeVisual = {
+                    theme: visualSettings.theme,
+                    colors: visualSettings.colors,
+                    fonts: visualSettings.fonts
+                };
+                localStorage.setItem('fpc-tournament', JSON.stringify({
+                    gameState,
+                    structure,
+                    payouts,
+                    visualSettings: safeVisual,
+                    chipsState          // unified save — no more double read/write
+                }));
+            } catch(e) {
+                console.warn('saveState failed (localStorage full?):', e);
+            }
         }
 
         function loadState() {
@@ -2828,13 +2887,8 @@
                     visualSettings = { ...visualSettings, ...data.visualSettings };
                     
                     // Apply visual settings
-                    if (visualSettings.logo) {
-                        setLogoImage(visualSettings.logo);
-                    }
-                    
-                    if (visualSettings.background) {
-                        document.getElementById('backgroundOverlay').style.backgroundImage = `url(${visualSettings.background})`;
-                    }
+                    // logo and background are NOT saved to localStorage (too large)
+                    // They remain as the hardcoded defaults in HTML
                     
                     if (visualSettings.colors) {
                         document.getElementById('primaryColor').value = visualSettings.colors.primary;
@@ -2866,6 +2920,7 @@
             loadChipsState();
             initChipsTab();
             updateTicker();
+            startClock();
         }
 
         // Keyboard
@@ -3002,6 +3057,10 @@
 
         function doRebuy() {
             const qty = chipsState.rebuyQty || 1;
+            const eliminated = chipsState.totalPlayers - chipsState.activePlayers;
+            if (chipsState.rebuys + qty > eliminated * 2) {
+                if (!confirm(`⚠️ ${chipsState.rebuys + qty} rebuys para ${eliminated} eliminado(s). Continuar?`)) return;
+            }
             chipsState.rebuys += qty;
             addChipsHistory('rebuy',
                 '♻️ ' + qty + ' rebuy(s) adicionado(s)',
@@ -3050,11 +3109,7 @@
         }
 
         function saveChipsState() {
-            try {
-                const saved = JSON.parse(localStorage.getItem('fpc-tournament') || '{}');
-                saved.chipsState = chipsState;
-                localStorage.setItem('fpc-tournament', JSON.stringify(saved));
-            } catch(e) {}
+            saveState(); // unified — no double read/write
         }
 
         function loadChipsState() {
@@ -3114,7 +3169,7 @@
                 }).catch(() => {});
             } else {
                 document.exitFullscreen().then(() => {
-                    btn.textContent = '⛶';
+                    btn.textContent = '⤢';
                     btn.title = 'Tela cheia';
                 }).catch(() => {});
             }
@@ -3123,7 +3178,7 @@
         document.addEventListener('fullscreenchange', () => {
             const btn = document.getElementById('fullscreenBtn');
             if (!btn) return;
-            btn.textContent = document.fullscreenElement ? '✕' : '⛶';
+            btn.textContent = document.fullscreenElement ? '✕' : '⤢';
             btn.title = document.fullscreenElement ? 'Sair da tela cheia' : 'Tela cheia';
         });
 
@@ -3179,6 +3234,267 @@
 
         // Call updateTicker whenever payouts or prize changes
         const _origRenderPayouts = renderPayouts;
+
+        // ─── #10: MUTE ────────────────────────────────────────────
+        let isMuted = false;
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('muteBtn');
+            if (btn) {
+                btn.textContent = isMuted ? '🔇' : '🔊';
+                btn.title       = isMuted ? 'Som desativado' : 'Desativar som';
+                btn.style.borderColor = isMuted ? '#ff3366' : 'var(--accent-color)';
+                btn.style.color       = isMuted ? '#ff3366' : 'var(--accent-light)';
+            }
+        }
+
+        // Wrap beep to respect mute
+        const _rawBeep = beep;
+        function beep(freq, dur, vol, delay) {
+            if (isMuted) return;
+            _rawBeep(freq, dur, vol, delay);
+        }
+
+        // ─── #11: RELÓGIO ─────────────────────────────────────────
+        function startClock() {
+            function tick() {
+                const el = document.getElementById('liveClock');
+                if (!el) return;
+                const now = new Date();
+                el.textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        // ─── #12: PREVIEW PRÓXIMO NÍVEL ──────────────────────────
+        function showNextLevelPreview(level) {
+            const existing = document.getElementById('levelPreviewOverlay');
+            if (existing) existing.remove();
+
+            const el = document.createElement('div');
+            el.id = 'levelPreviewOverlay';
+            el.style.cssText = `
+                position: fixed; inset: 0; z-index: 9999;
+                display: flex; flex-direction: column;
+                align-items: center; justify-content: center;
+                background: rgba(5, 18, 37, 0.88);
+                backdrop-filter: blur(8px);
+                animation: fadeInOut 3s ease forwards;
+                pointer-events: none;
+            `;
+
+            if (level.type === 'break') {
+                el.innerHTML = `
+                    <div style="font-family:var(--font-display);font-size:clamp(2rem,6vmin,5rem);
+                        color:var(--success-color);text-shadow:0 0 40px rgba(0,255,136,0.6);
+                        letter-spacing:4px;margin-bottom:1rem;">☕ INTERVALO</div>
+                    <div style="font-size:clamp(1rem,2.5vmin,2rem);color:var(--text-secondary);">
+                        Duração: ${level.duration}m
+                    </div>`;
+            } else {
+                el.innerHTML = `
+                    <div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vmin,2rem);
+                        color:var(--accent-color);letter-spacing:3px;margin-bottom:0.5rem;">
+                        PRÓXIMO NÍVEL
+                    </div>
+                    <div style="font-family:var(--font-mono);font-size:clamp(2.5rem,8vmin,7rem);
+                        color:var(--accent-light);text-shadow:0 0 40px rgba(255,215,0,0.7);
+                        font-weight:700;margin-bottom:0.5rem;">
+                        ${level.sb} / ${level.bb}
+                    </div>
+                    ${level.ante > 0 ? `<div style="font-family:var(--font-display);font-size:clamp(1rem,2.5vmin,2rem);
+                        color:var(--accent-color);">Ante: ${level.ante}</div>` : ''}
+                    <div style="font-size:clamp(0.8rem,1.5vmin,1.2rem);color:var(--text-secondary);margin-top:0.5rem;">
+                        Duração: ${fmtLevelDuration(level.duration)}
+                    </div>`;
+            }
+
+            document.body.appendChild(el);
+            setTimeout(() => { if (el.parentNode) el.remove(); }, 3000);
+        }
+
+        if (!document.getElementById('previewStyle')) {
+            const s = document.createElement('style');
+            s.id = 'previewStyle';
+            s.textContent = `
+                @keyframes fadeInOut {
+                    0%   { opacity: 0; transform: scale(0.95); }
+                    15%  { opacity: 1; transform: scale(1);    }
+                    75%  { opacity: 1; transform: scale(1);    }
+                    100% { opacity: 0; transform: scale(1.02); }
+                }`;
+            document.head.appendChild(s);
+        }
+
+        // ─── #8: ÚLTIMO NÍVEL WARNING ────────────────────────────
+        function showLastLevelWarning() {
+            const el = document.createElement('div');
+            el.style.cssText = `
+                position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+                z-index: 8888; background: linear-gradient(135deg, #ff3366, #cc1144);
+                color: white; font-family: var(--font-display); font-weight: 800;
+                font-size: clamp(0.9rem, 2vmin, 1.4rem); letter-spacing: 2px;
+                padding: clamp(10px,1.5vmin,18px) clamp(20px,3vmin,36px);
+                border-radius: 50px; box-shadow: 0 0 40px rgba(255,51,102,0.6);
+                animation: fadeInOut 4s ease forwards; pointer-events: none;
+                white-space: nowrap;
+            `;
+            el.textContent = '⚠️ ÚLTIMO NÍVEL DO TORNEIO';
+            document.body.appendChild(el);
+            // Urgent beeps
+            beepWarning();
+            setTimeout(() => beepWarning(), 800);
+            setTimeout(() => { if (el.parentNode) el.remove(); }, 4000);
+        }
+
+        // ─── #13: SOM DE INTERVALO ───────────────────────────────
+        function beepBreak() {
+            if (isMuted || !audioCtx) return;
+            // Melodia suave descendente
+            const notes = [523, 440, 392, 349];
+            notes.forEach((freq, i) => {
+                const osc  = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                const t = audioCtx.currentTime + i * 0.25;
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.5, t + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.start(t);
+                osc.stop(t + 0.55);
+            });
+        }
+
+        // ─── #16: MODO PROJETOR ──────────────────────────────────
+        let projectorChannel = null;
+        let projectorWin = null;
+
+        function openProjector() {
+            projectorWin = window.open('', 'fpc-projector',
+                'width=' + screen.availWidth + ',height=' + screen.availHeight +
+                ',top=0,left=0,toolbar=no,menubar=no,scrollbars=no,status=no');
+            if (!projectorWin) {
+                alert('Popup bloqueado! Permita popups para este site.');
+                return;
+            }
+
+            // Build a minimal timer-only page
+            const html = buildProjectorHTML();
+            projectorWin.document.open();
+            projectorWin.document.write(html);
+            projectorWin.document.close();
+
+            // Set up BroadcastChannel
+            projectorChannel = new BroadcastChannel('fpc-projector');
+            sendProjectorUpdate();
+
+            const projBtn = document.getElementById('projectorBtn');
+            if (projBtn) { projBtn.textContent = '📺 Fechar Projetor'; projBtn.onclick = closeProjector; }
+        }
+
+        function closeProjector() {
+            if (projectorWin) { projectorWin.close(); projectorWin = null; }
+            if (projectorChannel) { projectorChannel.close(); projectorChannel = null; }
+            const projBtn = document.getElementById('projectorBtn');
+            if (projBtn) { projBtn.textContent = '📺 Modo Projetor'; projBtn.onclick = openProjector; }
+        }
+
+        function sendProjectorUpdate() {
+            if (!projectorChannel) return;
+            const level = structure[gameState.currentLevel];
+            projectorChannel.postMessage({
+                timeLeft:      gameState.timeLeft,
+                totalTime:     gameState.totalTime,
+                currentLevel:  gameState.currentLevel,
+                isRunning:     gameState.isRunning,
+                sb: level?.sb || 0,
+                bb: level?.bb || 0,
+                ante: level?.ante || 0,
+                isBreak: level?.type === 'break',
+                activePlayers: gameState.activePlayers,
+                totalPlayers:  gameState.totalPlayers,
+                totalChips:    chipsState.totalPlayers * chipsState.startStack +
+                               chipsState.rebuys * chipsState.rebuyValue +
+                               chipsState.addons * chipsState.addonValue,
+                avgStack:      chipsState.activePlayers > 0
+                    ? Math.round((chipsState.totalPlayers * chipsState.startStack +
+                                  chipsState.rebuys * chipsState.rebuyValue +
+                                  chipsState.addons * chipsState.addonValue) / chipsState.activePlayers)
+                    : 0,
+                tournamentName: gameState.tournamentName,
+                payouts, grandTotalPrize: gameState.grandTotalPrize || 0,
+                additionalPrize: gameState.additionalPrize || 0,
+                buyin: gameState.buyin
+            });
+        }
+
+        function buildProjectorHTML() {
+            return `<!DOCTYPE html><html lang="pt-BR">
+<head><meta charset="UTF-8"><title>FPC — Projetor</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#050e1e;color:#fff;overflow:hidden;font-family:'Roboto Mono',monospace;}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vmin;}
+#pLevel{font-family:'Cinzel',serif;font-size:clamp(1.5rem,4vmin,4rem);color:#d4af37;letter-spacing:4px;text-transform:uppercase;}
+#pTimer{font-size:clamp(6rem,22vmin,20rem);font-weight:700;color:#ffd700;text-shadow:0 0 60px rgba(255,215,0,0.8);line-height:1;}
+.pBlinds{display:flex;gap:6vw;margin-top:1vmin;}
+.pBlind{text-align:center;}
+.pBlind label{font-family:'Cinzel',serif;font-size:clamp(0.7rem,1.5vmin,1.2rem);color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:2px;display:block;}
+.pBlind span{font-size:clamp(2rem,7vmin,6rem);font-weight:700;color:#fff;}
+#pAnte span{color:#ffd700;}
+#pPlayers{font-size:clamp(0.8rem,1.8vmin,1.4rem);color:rgba(255,255,255,0.5);}
+#pTicker{position:fixed;bottom:0;left:0;right:0;height:clamp(32px,4vmin,52px);background:rgba(5,18,37,0.98);
+  border-top:2px solid #d4af37;display:flex;align-items:center;overflow:hidden;}
+#pTickerLabel{background:linear-gradient(135deg,#ffd700,#d4af37);color:#050e1e;font-family:'Cinzel',serif;
+  font-weight:800;padding:0 20px;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
+#pTickerTrack{flex:1;overflow:hidden;height:100%;position:relative;}
+#pTickerContent{white-space:nowrap;font-size:clamp(0.8rem,1.8vmin,1.4rem);animation:scroll 20s linear infinite;
+  display:flex;align-items:center;height:100%;}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+</style></head>
+<body>
+<div id="pLevel">NÍVEL 1</div>
+<div id="pTimer">00:00</div>
+<div class="pBlinds">
+  <div class="pBlind"><label>Small</label><span id="pSB">—</span></div>
+  <div class="pBlind"><label>Big</label><span id="pBB">—</span></div>
+  <div class="pBlind" id="pAnte"><label>Ante</label><span id="pAnteVal">—</span></div>
+</div>
+<div id="pPlayers">— jogadores · pilha média: —</div>
+<div id="pTicker">
+  <div id="pTickerLabel">🏆 PREMIAÇÃO</div>
+  <div id="pTickerTrack"><div id="pTickerContent"></div></div>
+</div>
+<script>
+function fmt(s){const m=Math.floor(s/60),ss=s%60;return m+':'+String(ss).padStart(2,'0');}
+const ch = new BroadcastChannel('fpc-projector');
+ch.onmessage = ({data:d}) => {
+    document.getElementById('pTimer').textContent = fmt(d.timeLeft);
+    document.getElementById('pLevel').textContent = d.isBreak ? '☕ INTERVALO' : 'NÍVEL '+(d.currentLevel+1);
+    document.getElementById('pSB').textContent   = d.isBreak ? '—' : d.sb;
+    document.getElementById('pBB').textContent   = d.isBreak ? '—' : d.bb;
+    document.getElementById('pAnteVal').textContent = d.isBreak || !d.ante ? '—' : d.ante;
+    document.getElementById('pPlayers').textContent =
+        d.activePlayers+'/'+d.totalPlayers+' jogadores · pilha média: '+(d.avgStack||0).toLocaleString('pt-BR');
+    // Ticker
+    const totalPrize = d.totalPlayers * d.buyin + (d.additionalPrize||0);
+    const items = (d.payouts||[]).map((p,i)=>{
+        const v = Math.round(totalPrize * p.percent / 100);
+        return '<span style="padding:0 30px;color:#ffd700;font-weight:700;">🏆 '+(i+1)+'º Lugar</span>'
+             + '<span style="color:#00ff88;">R\$ '+v.toLocaleString('pt-BR')+'</span>'
+             + '<span style="padding:0 20px;color:#d4af37;opacity:0.4">◆</span>';
+    }).join('');
+    const t = document.getElementById('pTickerContent');
+    t.innerHTML = items + items;
+};
+<\/script></body></html>`;
+        }
+
     </script>
 </body>
 </html>
