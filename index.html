@@ -202,7 +202,29 @@
         }
         .tab-nav::-webkit-scrollbar { display: none; }
 
-        /* .tab-btn defined once below */
+        /* ── TAB BUTTONS ── */
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: clamp(12px,1.5vmin,18px) clamp(20px,2.5vmin,36px);
+            cursor: pointer;
+            font-size: clamp(0.78rem,1.3vmin,1.05rem);
+            font-weight: 600;
+            font-family: var(--font-body);
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .tab-btn.active {
+            color: var(--accent-light);
+            border-bottom-color: var(--accent-light);
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .tab-btn:hover {
+            color: var(--text-color);
+        }
 
         .tab-btn.active {
             color: var(--accent-light);
@@ -2024,6 +2046,7 @@
         } catch(e) {}
 
         let audioCtx = null;
+        let isMuted = false;
 
         // Inicialização
         function init() {
@@ -2044,7 +2067,7 @@
 
         // Audio
         function beep(freq = 800, dur = 200, vol = 0.3, delay = 0) {
-            if (!audioCtx) return;
+            if (!audioCtx || isMuted) return;
             try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
@@ -2063,19 +2086,19 @@
 
         // 59s: um apito longo e alto
         function beepWarning() {
-            if (!audioCtx) return;
+            if (!audioCtx || isMuted) return;
             beep(880, 600, 0.7);
         }
 
         // 3, 2, 1s: pi curto por segundo
         function beepCountdown() {
-            if (!audioCtx) return;
+            if (!audioCtx || isMuted) return;
             beep(1046, 180, 0.6);
         }
 
         // Fim do nível: pipipi rápido e alto
         function beepFinish() {
-            if (!audioCtx) return;
+            if (!audioCtx || isMuted) return;
             // 5 apitos rápidos em sequência
             beep(1320, 120, 0.9, 0.00);
             beep(1320, 120, 0.9, 0.16);
@@ -3236,7 +3259,6 @@
         const _origRenderPayouts = renderPayouts;
 
         // ─── #10: MUTE ────────────────────────────────────────────
-        let isMuted = false;
         function toggleMute() {
             isMuted = !isMuted;
             const btn = document.getElementById('muteBtn');
@@ -3246,13 +3268,6 @@
                 btn.style.borderColor = isMuted ? '#ff3366' : 'var(--accent-color)';
                 btn.style.color       = isMuted ? '#ff3366' : 'var(--accent-light)';
             }
-        }
-
-        // Wrap beep to respect mute
-        const _rawBeep = beep;
-        function beep(freq, dur, vol, delay) {
-            if (isMuted) return;
-            _rawBeep(freq, dur, vol, delay);
         }
 
         // ─── #11: RELÓGIO ─────────────────────────────────────────
