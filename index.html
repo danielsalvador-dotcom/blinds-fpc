@@ -1525,10 +1525,10 @@
             <div class="timer-center">
                 <div class="timer-info-top">
                     <div class="total-time">
-                        Total: <span id="totalTimer">2:12:47</span>
+                        ⏱ Tempo Total: <span id="totalTimer">0:00:00</span>
                     </div>
                     <div class="break-time">
-                        Próximo intervalo: <span id="breakTimer">3 níveis (45 min)</span>
+                        ⏭ Próx. intervalo: <span id="breakTimer">—</span>
                     </div>
                 </div>
 
@@ -1945,9 +1945,9 @@
     <script>
         // Estado do jogo
         let gameState = {
-            currentLevel: 1,
-            timeLeft: 767, // 12:47
-            totalTime: 7967, // 2:12:47
+            currentLevel: 0,
+            timeLeft: 0,     // set by init from structure
+            totalTime: 0,    // counts up from 0 when started
             isRunning: false,
             activePlayers: 16,
             totalPlayers: 16,
@@ -2020,6 +2020,10 @@
             try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             } catch(e) {}
+            // Set initial timeLeft from first level
+            if (gameState.timeLeft === 0 && structure.length > 0) {
+                gameState.timeLeft = structure[0].duration * 60;
+            }
             
             updateDisplay();
             renderStructureConfig();
@@ -2182,6 +2186,15 @@
         }
 
         // Render functions
+        function fmtLevelDuration(minutes) {
+            if (minutes >= 60) {
+                const h = Math.floor(minutes / 60);
+                const m = minutes % 60;
+                return m > 0 ? `${h}h${m.toString().padStart(2,'0')}m` : `${h}h`;
+            }
+            return minutes + 'm';
+        }
+
         function renderNextLevels() {
             const list = document.getElementById('nextLevels');
             list.innerHTML = '';
@@ -2191,18 +2204,23 @@
                 const li = document.createElement('li');
                 li.className = `next-level-item ${i === gameState.currentLevel ? 'current' : ''} ${level.type === 'break' ? 'break' : ''}`;
                 li.onclick = () => goToLevel(i);
+
+                // For the current level, show remaining time live; others show full duration
+                const durationLabel = (i === gameState.currentLevel)
+                    ? formatDurationFull(gameState.timeLeft)
+                    : fmtLevelDuration(level.duration);
                 
                 if (level.type === 'break') {
                     li.innerHTML = `
                         <span class="level-num">☕</span>
                         <span class="level-blinds">INTERVALO</span>
-                        <span class="level-time">${level.duration}m</span>
+                        <span class="level-time">${durationLabel}</span>
                     `;
                 } else {
                     li.innerHTML = `
                         <span class="level-num">N${level.level}</span>
                         <span class="level-blinds">${level.sb} / ${level.bb}</span>
-                        <span class="level-time">${level.duration}m</span>
+                        <span class="level-time">${durationLabel}</span>
                     `;
                 }
                 
@@ -2210,22 +2228,49 @@
             }
         }
 
+        function formatDuration(totalMinutes) {
+            const h = Math.floor(totalMinutes / 60);
+            const m = totalMinutes % 60;
+            if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m`;
+            return `${m}m`;
+        }
+
+        function formatDurationFull(totalSeconds) {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            if (h > 0) return `${h}h ${m.toString().padStart(2,'0')}m ${s.toString().padStart(2,'0')}s`;
+            if (m > 0) return `${m}m ${s.toString().padStart(2,'0')}s`;
+            return `${s}s`;
+        }
+
         function updateBreakTimer() {
             let levelsToBreak = 0;
-            let timeToBreak = 0;
-            
+            let totalSecondsToBreak = 0;
+
+            // Include remaining time in current level
+            totalSecondsToBreak += gameState.timeLeft;
+
             for (let i = gameState.currentLevel + 1; i < structure.length; i++) {
                 if (structure[i].type === 'break') {
                     levelsToBreak = i - gameState.currentLevel;
                     break;
                 }
-                timeToBreak += structure[i].duration;
+                totalSecondsToBreak += structure[i].duration * 60;
             }
-            
+
+            const el = document.getElementById('breakTimer');
             if (levelsToBreak > 0) {
-                document.getElementById('breakTimer').textContent = `${levelsToBreak} níveis (${timeToBreak} min)`;
+                const h = Math.floor(totalSecondsToBreak / 3600);
+                const m = Math.floor((totalSecondsToBreak % 3600) / 60);
+                const s = totalSecondsToBreak % 60;
+                let timeStr = '';
+                if (h > 0) timeStr += h + 'h ';
+                timeStr += m.toString().padStart(2,'0') + 'm ';
+                timeStr += s.toString().padStart(2,'0') + 's';
+                el.textContent = `${levelsToBreak} nível(is) · ${timeStr}`;
             } else {
-                document.getElementById('breakTimer').textContent = 'Não há';
+                el.textContent = 'Não há intervalo';
             }
         }
 
@@ -2757,7 +2802,18 @@
                 const saved = localStorage.getItem('fpc-tournament');
                 if (saved) {
                     const data = JSON.parse(saved);
+                    // Preserve fresh timer values — don't restore stale running state
+                    const prevLevel = data.gameState?.currentLevel ?? 0;
                     gameState = { ...gameState, ...data.gameState };
+                    // Always recalculate timeLeft from structure to avoid stale values
+                    if (structure[gameState.currentLevel]) {
+                        gameState.timeLeft = structure[gameState.currentLevel].duration * 60;
+                    }
+                    // Never restore totalTime from old saves that had wrong initial value
+                    if (gameState.totalTime > 7000 && !gameState.isRunning) {
+                        gameState.totalTime = 0;
+                    }
+                    gameState.isRunning = false; // never auto-resume
                     structure = data.structure || structure;
                     payouts = data.payouts || payouts;
                     visualSettings = { ...visualSettings, ...data.visualSettings };
