@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPC Tournament Clock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1a237e;
+            --navy-dark: #0d1b3a;
+            --gold: #d4af37;
+            --gold-light: #f4e18a;
+            --orange: #ff6b35;
+            --white: #ffffff;
+            --gray: rgba(255,255,255,0.7);
+            --green: #00ff88;
+            --red: #ff3366;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(ellipse at center, var(--navy) 0%, var(--navy-dark) 100%);
+            color: var(--white);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fundo animado */
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 3s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* Header */
+        .header {
+            background: rgba(26, 35, 126, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .tournament-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--orange);
+            text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+        }
+
+        .plan-info {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 5px 15px;
+            border-radius: 15px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+
+        /* Main Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 20px;
+            padding: 20px;
+            height: calc(100vh - 80px);
+        }
+
+        .panel {
+            background: rgba(26, 35, 126, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            color: var(--gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Logo */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .fpc-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 10px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .fpc-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .chip-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--gold), #8b7d2e, var(--gold), #8b7d2e, var(--gold), #8b7d2e, var(--gold), #8b7d2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            padding: 6px;
+        }
+
+        .chip-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--gold);
+            position: relative;
+        }
+
+        .chip-fpc {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .chip-sub {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.35rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-align: center;
+            line-height: 1.1;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-upload {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        /* Structure Panel */
+        .structure-controls {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .control-btn-small {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn-small:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .structure-list {
+            list-style: none;
+        }
+
+        .structure-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        .structure-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .structure-item.active {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: var(--orange);
+            font-weight: 600;
+        }
+
+        .structure-item.break {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--green);
+            color: var(--green);
+            font-style: italic;
+        }
+
+        .level-num {
+            width: 20px;
+            color: var(--orange);
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .level-time {
+            width: 35px;
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        .level-blinds {
+            flex: 1;
+            color: var(--white);
+        }
+
+        .edit-input {
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            width: 30px;
+            text-align: center;
+            padding: 1px;
+        }
+
+        .edit-input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            outline: 1px solid var(--gold);
+            border-radius: 2px;
+        }
+
+        .remove-btn {
+            background: var(--red);
+            border: none;
+            color: white;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+
+        /* Timer Panel */
+        .timer-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .timer-info-top {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .main-timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--orange);
+            text-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .main-timer.warning {
+            color: var(--red);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .progress-container {
+            width: 70%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--orange), var(--gold));
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+
+        .blinds-display {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .blind-item {
+            text-align: center;
+        }
+
+        .blind-label {
+            color: var(--gray);
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .blind-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .blind-value.ante {
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .timer-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .timer-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+            transform: translateY(-2px);
+        }
+
+        .timer-btn.play {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: var(--orange);
+            color: var(--orange);
+            padding: 12px 30px;
+        }
+
+        .timer-btn.play:hover {
+            background: var(--orange);
+            color: white;
+        }
+
+        /* Info Panel */
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .info-title {
+            color: var(--gold);
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .players-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--white);
+            text-align: center;
+            margin: 8px 0;
+            cursor: pointer;
+        }
+
+        .players-display:hover {
+            color: var(--gold);
+        }
+
+        .avg-stack {
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .stack-value {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .payout-list {
+            list-style: none;
+        }
+
+        .payout-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+
+        .payout-pos {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .payout-value {
+            color: var(--white);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .payout-value:hover {
+            color: var(--gold);
+        }
+
+        .payout-percent {
+            color: var(--gray);
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                gap: 15px;
+            }
+            
+            .panel {
+                max-height: 250px;
+            }
+            
+            .timer-panel {
+                max-height: none;
+            }
+            
+            .main-timer {
+                font-size: 4rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="header">
+        <div style="color: var(--gray); cursor: pointer;" onclick="goBack()">
+            ← LOBBY DE POKER
+        </div>
+        <div class="tournament-title" onclick="editTournamentName()">NOITE DOS FUNDADORES ⚙️ 📋</div>
+        <div class="plan-info">Plano atual: Home Game A</div>
+    </div>
+
+    <div class="container">
+        <!-- Left Panel - Structure -->
+        <div class="panel">
+            <div class="panel-title">Estrutura de Blinds</div>
+            
+            <div class="structure-controls">
+                <button class="control-btn-small" onclick="addLevel()">+ Nível</button>
+                <button class="control-btn-small" onclick="addBreak()">+ Pausa</button>
+                <button class="control-btn-small" onclick="resetStructure()">Reset</button>
+            </div>
+            
+            <ul class="structure-list" id="structureList"></ul>
+        </div>
+
+        <!-- Center Panel - Timer -->
+        <div class="panel timer-panel">
+            <div class="timer-info-top">
+                <div id="levelTimer">12:47</div>
+                <div id="totalTimer">2:12:47</div>
+            </div>
+
+            <div class="main-timer" id="mainTimer">12:47</div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="blinds-display">
+                <div class="blind-item">
+                    <div class="blind-label">Small Blind</div>
+                    <div class="blind-value" id="currentSB">25</div>
+                </div>
+                <div class="blind-item">
+                    <div class="blind-label">Big Blind</div>
+                    <div class="blind-value" id="currentBB">50</div>
+                </div>
+                <div class="blind-item" id="anteSection" style="display: none;">
+                    <div class="blind-label">Ante</div>
+                    <div class="blind-value ante" id="currentAnte">5</div>
+                </div>
+            </div>
+
+            <div class="timer-controls">
+                <button class="timer-btn" onclick="prevLevel()">⏮</button>
+                <button class="timer-btn" onclick="adjustTime(-60)">-1m</button>
+                <button class="timer-btn play" id="playBtn" onclick="toggleTimer()">▶ Iniciar</button>
+                <button class="timer-btn" onclick="adjustTime(60)">+1m</button>
+                <button class="timer-btn" onclick="nextLevel()">⏭</button>
+            </div>
+        </div>
+
+        <!-- Right Panel - Info -->
+        <div class="panel">
+            <div class="logo-section">
+                <div class="fpc-logo" onclick="document.getElementById('logoFile').click()">
+                    <div class="chip-container">
+                        <div class="chip-inner" id="chipInner">
+                            <div class="chip-fpc">FPC</div>
+                            <div class="chip-sub">FUNDADORES<br>POKER CLUB</div>
+                        </div>
+                    </div>
+                    <input type="file" id="logoFile" class="logo-upload" accept="image/*" onchange="uploadLogo(event)">
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-title">Jogadores</div>
+                <div class="players-display" onclick="editPlayers()">
+                    <span id="activePlayers">16</span>/<span id="totalPlayers">16</span>
+                </div>
+                <div class="avg-stack">
+                    PILHA MÉDIA<br>
+                    <span class="stack-value" id="avgStack">5000</span>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-title">Pagamentos</div>
+                <ul class="payout-list" id="payoutList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado do jogo
+        let state = {
+            currentLevel: 1,
+            timeLeft: 767, // 12:47
+            totalTime: 7967, // 2:12:47
+            isRunning: false,
+            activePlayers: 16,
+            totalPlayers: 16,
+            buyin: 60,
+            tournamentName: "NOITE DOS FUNDADORES"
+        };
+
+        // Estrutura de blinds
+        let structure = [
+            { level: 1, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' },
+            { level: 2, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' }, // atual
+            { level: 3, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
+            { level: 4, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
+            { level: 5, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
+            { level: 6, sb: 60, bb: 120, ante: 0, duration: 15, type: 'normal' },
+            { level: 7, sb: 75, bb: 150, ante: 0, duration: 15, type: 'normal' },
+            { level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break' }
+        ];
+
+        // Pagamentos
+        let payouts = [
+            { pos: 1, amount: 384, percent: 40 },
+            { pos: 2, amount: 288, percent: 30 },
+            { pos: 3, amount: 192, percent: 20 },
+            { pos: 4, amount: 96, percent: 10 }
+        ];
+
+        let timerId = null;
+        let audioCtx = null;
+
+        // Inicialização
+        function init() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch(e) {}
+            
+            renderStructure();
+            renderPayouts();
+            updateDisplay();
+            loadState();
+        }
+
+        // Audio
+        function beep(freq = 800, dur = 200, vol = 0.3) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur/1000);
+            osc.start();
+            osc.stop(audioCtx.currentTime + dur/1000);
+        }
+
+        // Timer
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function formatTotalTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            const level = structure[state.currentLevel];
+            
+            // Timer
+            document.getElementById('mainTimer').textContent = formatTime(state.timeLeft);
+            document.getElementById('levelTimer').textContent = formatTime(state.timeLeft);
+            document.getElementById('totalTimer').textContent = formatTotalTime(state.totalTime);
+            
+            // Progress
+            const progress = (state.timeLeft / (level.duration * 60)) * 100;
+            document.getElementById('progressBar').style.width = Math.max(0, progress) + '%';
+            
+            // Warning
+            const timer = document.getElementById('mainTimer');
+            if (state.timeLeft <= 60) {
+                timer.classList.add('warning');
+            } else {
+                timer.classList.remove('warning');
+            }
+            
+            // Blinds
+            if (level.type === 'break') {
+                document.getElementById('currentSB').textContent = 'PAUSA';
+                document.getElementById('currentBB').textContent = '';
+                document.getElementById('anteSection').style.display = 'none';
+            } else {
+                document.getElementById('currentSB').textContent = level.sb;
+                document.getElementById('currentBB').textContent = level.bb;
+                if (level.ante > 0) {
+                    document.getElementById('currentAnte').textContent = level.ante;
+                    document.getElementById('anteSection').style.display = 'block';
+                } else {
+                    document.getElementById('anteSection').style.display = 'none';
+                }
+            }
+            
+            // Players
+            document.getElementById('activePlayers').textContent = state.activePlayers;
+            document.getElementById('totalPlayers').textContent = state.totalPlayers;
+            
+            // Average stack
+            const totalChips = state.totalPlayers * state.buyin * 1000 / state.buyin;
+            const avgStack = Math.round(totalChips / state.activePlayers);
+            document.getElementById('avgStack').textContent = avgStack.toLocaleString();
+            
+            renderStructure();
+            saveState();
+        }
+
+        function tick() {
+            state.timeLeft--;
+            state.totalTime++;
+            
+            if (state.timeLeft <= 0) {
+                nextLevel(true);
+                return;
+            }
+            
+            if (state.timeLeft === 60) {
+                beep(440, 100);
+            }
+            
+            updateDisplay();
+        }
+
+        function toggleTimer() {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            state.isRunning = !state.isRunning;
+            const btn = document.getElementById('playBtn');
+            
+            if (state.isRunning) {
+                timerId = setInterval(tick, 1000);
+                btn.textContent = '⏸ Pausar';
+                btn.style.background = 'rgba(255, 51, 102, 0.2)';
+                btn.style.borderColor = 'var(--red)';
+                btn.style.color = 'var(--red)';
+            } else {
+                clearInterval(timerId);
+                btn.textContent = '▶ Iniciar';
+                btn.style.background = 'rgba(255, 107, 53, 0.2)';
+                btn.style.borderColor = 'var(--orange)';
+                btn.style.color = 'var(--orange)';
+            }
+        }
+
+        function adjustTime(seconds) {
+            state.timeLeft = Math.max(0, state.timeLeft + seconds);
+            updateDisplay();
+        }
+
+        function nextLevel(auto = false) {
+            if (state.currentLevel < structure.length - 1) {
+                state.currentLevel++;
+                state.timeLeft = structure[state.currentLevel].duration * 60;
+                
+                if (auto) {
+                    // Level up sound
+                    setTimeout(() => beep(660, 150), 0);
+                    setTimeout(() => beep(880, 150), 200);
+                    setTimeout(() => beep(1100, 300), 400);
+                }
+                
+                updateDisplay();
+            }
+        }
+
+        function prevLevel() {
+            if (state.currentLevel > 0) {
+                state.currentLevel--;
+                state.timeLeft = structure[state.currentLevel].duration * 60;
+                updateDisplay();
+            }
+        }
+
+        // Structure
+        function renderStructure() {
+            const list = document.getElementById('structureList');
+            list.innerHTML = '';
+            
+            structure.forEach((level, i) => {
+                const li = document.createElement('li');
+                li.className = `structure-item ${i === state.currentLevel ? 'active' : ''} ${level.type === 'break' ? 'break' : ''}`;
+                li.onclick = () => goToLevel(i);
+                
+                if (level.type === 'break') {
+                    li.innerHTML = `
+                        <span class="level-num">☕</span>
+                        <span class="level-time">
+                            <input class="edit-input" type="number" value="${level.duration}" min="1" max="60" 
+                                onchange="updateStructure(${i}, 'duration', this.value)" style="width: 25px;">m
+                        </span>
+                        <span class="level-blinds">PAUSA</span>
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeLevel(${i})">×</button>
+                    `;
+                } else {
+                    li.innerHTML = `
+                        <span class="level-num">${level.level}</span>
+                        <span class="level-time">
+                            <input class="edit-input" type="number" value="${level.duration}" min="1" max="60" 
+                                onchange="updateStructure(${i}, 'duration', this.value)" style="width: 25px;">m
+                        </span>
+                        <span class="level-blinds">
+                            <input class="edit-input" type="number" value="${level.sb}" min="1" 
+                                onchange="updateStructure(${i}, 'sb', this.value)"> / 
+                            <input class="edit-input" type="number" value="${level.bb}" min="1" 
+                                onchange="updateStructure(${i}, 'bb', this.value)">
+                            ${level.ante > 0 ? `<br><small>A: <input class="edit-input" type="number" value="${level.ante}" min="0" onchange="updateStructure(${i}, 'ante', this.value)" style="width: 20px;"></small>` : ''}
+                        </span>
+                        <button class="remove-btn" onclick="event.stopPropagation(); removeLevel(${i})">×</button>
+                    `;
+                }
+                
+                list.appendChild(li);
+            });
+        }
+
+        function updateStructure(index, field, value) {
+            structure[index][field] = parseInt(value) || 0;
+            updateDisplay();
+        }
+
+        function goToLevel(index) {
+            if (state.isRunning) {
+                toggleTimer();
+            }
+            state.currentLevel = index;
+            state.timeLeft = structure[index].duration * 60;
+            updateDisplay();
+        }
+
+        function addLevel() {
+            const newLevel = {
+                level: structure.filter(s => s.type === 'normal').length + 1,
+                sb: 100,
+                bb: 200,
+                ante: 0,
+                duration: 15,
+                type: 'normal'
+            };
+            structure.push(newLevel);
+            renderStructure();
+        }
+
+        function addBreak() {
+            structure.push({
+                level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break'
+            });
+            renderStructure();
+        }
+
+        function removeLevel(index) {
+            if (structure.length <= 1) return;
+            structure.splice(index, 1);
+            if (state.currentLevel >= structure.length) {
+                state.currentLevel = structure.length - 1;
+            }
+            if (state.currentLevel >= index && state.currentLevel > 0) {
+                state.currentLevel--;
+            }
+            updateDisplay();
+        }
+
+        function resetStructure() {
+            if (confirm('Resetar estrutura?')) {
+                structure = [
+                    { level: 1, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' },
+                    { level: 2, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' },
+                    { level: 3, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
+                    { level: 4, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
+                    { level: 5, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
+                    { level: 6, sb: 60, bb: 120, ante: 0, duration: 15, type: 'normal' },
+                    { level: 7, sb: 75, bb: 150, ante: 0, duration: 15, type: 'normal' },
+                    { level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break' }
+                ];
+                state.currentLevel = 1;
+                updateDisplay();
+            }
+        }
+
+        // Payouts
+        function renderPayouts() {
+            const list = document.getElementById('payoutList');
+            list.innerHTML = '';
+            
+            payouts.forEach((p, i) => {
+                const li = document.createElement('li');
+                li.className = 'payout-item';
+                li.innerHTML = `
+                    <span class="payout-pos">${p.pos}º</span>
+                    <div>
+                        <span class="payout-value" onclick="editPayout(${i})">${p.amount}</span>
+                        <span class="payout-percent">${p.percent}%</span>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function editPayout(index) {
+            const newAmount = prompt(`Valor do ${payouts[index].pos}º lugar:`, payouts[index].amount);
+            if (newAmount && !isNaN(parseInt(newAmount))) {
+                payouts[index].amount = parseInt(newAmount);
+                renderPayouts();
+                saveState();
+            }
+        }
+
+        // Editors
+        function editPlayers() {
+            const newActive = prompt('Jogadores ativos:', state.activePlayers);
+            if (newActive && !isNaN(parseInt(newActive))) {
+                state.activePlayers = Math.max(1, parseInt(newActive));
+                updateDisplay();
+            }
+        }
+
+        function editTournamentName() {
+            const newName = prompt('Nome do torneio:', state.tournamentName);
+            if (newName) {
+                state.tournamentName = newName;
+                document.querySelector('.tournament-title').textContent = newName + ' ⚙️ 📋';
+                saveState();
+            }
+        }
+
+        // Logo upload
+        function uploadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const inner = document.getElementById('chipInner');
+                    inner.style.backgroundImage = `url(${e.target.result})`;
+                    inner.style.backgroundSize = 'cover';
+                    inner.style.backgroundPosition = 'center';
+                    inner.innerHTML = '';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Storage
+        function saveState() {
+            localStorage.setItem('fpc-tournament', JSON.stringify({ state, structure, payouts }));
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('fpc-tournament');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    state = { ...state, ...data.state };
+                    structure = data.structure || structure;
+                    payouts = data.payouts || payouts;
+                    
+                    document.querySelector('.tournament-title').textContent = state.tournamentName + ' ⚙️ 📋';
+                    renderStructure();
+                    renderPayouts();
+                    updateDisplay();
+                }
+            } catch (e) {}
+        }
+
+        function goBack() {
+            if (confirm('Voltar ao lobby?')) {
+                if (state.isRunning) toggleTimer();
+                // Navigation logic here
+            }
+        }
+
+        // Keyboard
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleTimer();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextLevel();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                prevLevel();
+            }
+        });
+
+        // Start
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
