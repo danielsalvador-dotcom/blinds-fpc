@@ -1320,37 +1320,139 @@
         .chips-timer-row {
             display: flex;
             align-items: center;
-            gap: clamp(8px, 1.5vmin, 20px);
-            margin-top: clamp(6px, 1vmin, 14px);
-            background: rgba(10, 26, 46, 0.5);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: clamp(8px, 1vmin, 14px);
-            padding: clamp(6px, 0.9vmin, 12px) clamp(12px, 1.8vmin, 22px);
+            gap: clamp(14px, 3vmin, 40px);
+            margin-top: clamp(8px, 1.2vmin, 18px);
+            background: rgba(10, 26, 46, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: clamp(10px, 1.2vmin, 18px);
+            padding: clamp(10px, 1.5vmin, 20px) clamp(20px, 3vmin, 40px);
             flex-wrap: wrap;
             justify-content: center;
+            box-shadow: 0 4px 20px rgba(212,175,55,0.08);
         }
         .chips-timer-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: clamp(2px, 0.4vmin, 6px);
         }
         .chips-timer-label {
-            font-size: clamp(0.6rem, 1.1vmin, 0.9rem);
+            font-size: clamp(0.65rem, 1.3vmin, 1.05rem);
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
             white-space: nowrap;
+            font-family: var(--font-display);
         }
         .chips-timer-val {
             font-family: var(--font-mono);
-            font-size: clamp(0.85rem, 1.8vmin, 1.5rem);
+            font-size: clamp(1.1rem, 2.8vmin, 2.4rem);
             font-weight: 700;
             color: var(--accent-light);
+            text-shadow: 0 0 14px rgba(255,215,0,0.4);
         }
         .chips-timer-sep {
-            color: rgba(212, 175, 55, 0.3);
-            font-size: 1.2rem;
+            color: rgba(212, 175, 55, 0.35);
+            font-size: clamp(1rem, 2vmin, 2rem);
+            align-self: center;
+        }
+
+        /* ─── PAYOUT TICKER ─── */
+        .payout-ticker {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(90deg, rgba(5,18,37,0.98) 0%, rgba(10,26,46,0.95) 100%);
+            border-top: 2px solid var(--accent-color);
+            height: clamp(34px, 4.5vmin, 56px);
+            overflow: hidden;
+            box-shadow: 0 -4px 20px rgba(212,175,55,0.2);
+        }
+
+        .ticker-label {
+            font-family: var(--font-display);
+            font-size: clamp(0.62rem, 1.3vmin, 1rem);
+            font-weight: 800;
+            color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-color));
+            padding: 0 clamp(10px, 1.5vmin, 18px);
+            height: 100%;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            border-right: 2px solid rgba(212,175,55,0.3);
+        }
+
+        .ticker-track-wrap {
+            flex: 1;
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+        }
+
+        .ticker-track {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            white-space: nowrap;
+            animation: tickerScroll 22s linear infinite;
+            will-change: transform;
+        }
+
+        .ticker-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes tickerScroll {
+            0%   { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: clamp(6px, 1vmin, 12px);
+            padding: 0 clamp(20px, 3vmin, 40px);
+            font-family: var(--font-mono);
+            font-size: clamp(0.75rem, 1.6vmin, 1.25rem);
+            font-weight: 700;
+            color: var(--text-color);
+            flex-shrink: 0;
+        }
+
+        .ticker-item .ticker-pos {
+            color: var(--accent-light);
+            font-family: var(--font-display);
+            font-size: clamp(0.68rem, 1.3vmin, 1.05rem);
+            letter-spacing: 1px;
+        }
+
+        .ticker-item .ticker-prize {
+            color: var(--success-color);
+            font-size: clamp(0.82rem, 1.7vmin, 1.3rem);
+            text-shadow: 0 0 10px rgba(0,255,136,0.4);
+        }
+
+        .ticker-item .ticker-dot {
+            color: var(--accent-color);
+            opacity: 0.5;
+            font-size: 1.4em;
+        }
+
+        /* Fullscreen ticker scales up */
+        :fullscreen .payout-ticker,
+        :-webkit-full-screen .payout-ticker {
+            height: clamp(42px, 5.5vmin, 70px);
+        }
+        :fullscreen .ticker-item,
+        :-webkit-full-screen .ticker-item {
+            font-size: clamp(0.9rem, 2vmin, 1.6rem) !important;
+        }
+        :fullscreen .ticker-label,
+        :-webkit-full-screen .ticker-label {
+            font-size: clamp(0.75rem, 1.6vmin, 1.2rem) !important;
         }
     </style>
 </head>
@@ -1506,6 +1608,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Payout Ticker -->
+        <div class="payout-ticker" id="payoutTicker">
+            <span class="ticker-label">🏆 PREMIAÇÃO</span>
+            <div class="ticker-track-wrap">
+                <div class="ticker-track" id="tickerTrack">
+                    <!-- populated by JS -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Config Tab -->
@@ -1580,9 +1692,26 @@
             <div class="config-section">
                 <div class="section-title">Premiação</div>
                 
-                <div class="total-prize">
-                    <div>Total Arrecadado</div>
-                    <div class="total-prize-value" id="totalPrize">R$ 960</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                    <div class="total-prize">
+                        <div>Buy-in × Jogadores</div>
+                        <div class="total-prize-value" id="totalPrize">R$ 960</div>
+                    </div>
+                    <div class="total-prize" style="border-color:rgba(0,255,136,0.4);background:rgba(0,255,136,0.05);">
+                        <div>Total Premiação</div>
+                        <div class="total-prize-value" id="grandTotalPrize" style="color:var(--success-color);">R$ 960</div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label class="form-label">💰 Valor Adicional ao Prêmio (R$)</label>
+                    <input type="number" class="form-input" id="additionalPrizeInput"
+                        value="0" min="0" step="10"
+                        oninput="renderPayouts()" onchange="renderPayouts()"
+                        placeholder="Ex: 200 (patrocínio, rebuy, etc)">
+                    <small style="color:var(--text-secondary);font-size:0.8rem;margin-top:4px;display:block;">
+                        Somado ao total de buy-ins para calcular a premiação
+                    </small>
                 </div>
                 
                 <div class="payout-list" id="payoutList">
@@ -2384,10 +2513,20 @@
         // Payouts
         function renderPayouts() {
             const list = document.getElementById('payoutList');
-            const totalPrize = gameState.totalPlayers * gameState.buyin;
+            const basePrize = gameState.totalPlayers * gameState.buyin;
+            const additionalEl = document.getElementById('additionalPrizeInput');
+            const additional = additionalEl ? (parseInt(additionalEl.value) || 0) : 0;
+            const totalPrize = basePrize + additional;
             
-            document.getElementById('totalPrize').textContent = `R$ ${totalPrize.toLocaleString()}`;
+            const basePrizeEl = document.getElementById('totalPrize');
+            const grandTotalEl = document.getElementById('grandTotalPrize');
+            if (basePrizeEl)  basePrizeEl.textContent  = `R$ ${basePrize.toLocaleString('pt-BR')}`;
+            if (grandTotalEl) grandTotalEl.textContent = `R$ ${totalPrize.toLocaleString('pt-BR')}`;
             
+            // Store for ticker
+            gameState.grandTotalPrize  = totalPrize;
+            gameState.additionalPrize  = additional;
+
             list.innerHTML = '';
             
             payouts.forEach((p, i) => {
@@ -2397,8 +2536,8 @@
                 div.className = 'payout-item';
                 div.innerHTML = `
                     <div class="payout-pos">${p.pos}º lugar</div>
-                    <input type="number" class="payout-percent" value="${p.percent}" min="0" max="100" onchange="updatePayout(${i}, 'percent', this.value)">
-                    <div class="payout-value">R$ ${value.toLocaleString()}</div>
+                    <input type="number" class="payout-percent" value="${p.percent}" min="0" max="100" oninput="renderPayouts()" onchange="updatePayout(${i}, 'percent', this.value)">
+                    <div class="payout-value">R$ ${value.toLocaleString('pt-BR')}</div>
                     <button class="remove-btn" onclick="removePayout(${i})">×</button>
                 `;
                 list.appendChild(div);
@@ -2409,6 +2548,7 @@
             payouts[index][field] = parseInt(value) || 0;
             renderPayouts();
             saveState();
+            updateTicker();
         }
 
         function addPayout() {
@@ -2660,6 +2800,7 @@
             }
             loadChipsState();
             initChipsTab();
+            updateTicker();
         }
 
         // Keyboard
@@ -2928,6 +3069,47 @@
             }
         });
 
+
+        // ─── PAYOUT TICKER ───────────────────────────────────────
+        const ORDINALS = ['1º','2º','3º','4º','5º','6º','7º','8º','9º','10º'];
+
+        function buildTickerItems() {
+            const basePrize   = (gameState.totalPlayers || 16) * (gameState.buyin || 60);
+            const additional  = gameState.additionalPrize || 0;
+            const totalPrize  = basePrize + additional;
+
+            if (!payouts || payouts.length === 0) return '';
+
+            // Build items (duplicated for seamless loop)
+            const items = payouts.map((p, i) => {
+                const value  = Math.round((totalPrize * p.percent) / 100);
+                const ordinal = ORDINALS[i] || (p.pos + 'º');
+                return `
+                    <span class="ticker-item">
+                        <span class="ticker-pos">🏆 ${ordinal} Lugar</span>
+                        <span class="ticker-prize">R$ ${value.toLocaleString('pt-BR')}</span>
+                        <span class="ticker-dot">◆</span>
+                    </span>`;
+            }).join('');
+
+            // Duplicate for seamless infinite scroll
+            return items + items;
+        }
+
+        function updateTicker() {
+            const track = document.getElementById('tickerTrack');
+            if (!track) return;
+            const html = buildTickerItems();
+            track.innerHTML = html;
+
+            // Adjust animation speed based on content length
+            const itemCount  = payouts.length;
+            const duration   = Math.max(12, itemCount * 5);
+            track.style.animationDuration = duration + 's';
+        }
+
+        // Call updateTicker whenever payouts or prize changes
+        const _origRenderPayouts = renderPayouts;
     </script>
 </body>
 </html>
