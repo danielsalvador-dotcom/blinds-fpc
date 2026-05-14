@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPC Tournament Clock</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,22 +13,39 @@
         }
 
         :root {
-            --navy: #1a237e;
-            --navy-dark: #0d1b3a;
-            --gold: #d4af37;
-            --orange: #ff6b35;
-            --white: #ffffff;
-            --gray: rgba(255,255,255,0.7);
-            --green: #00ff88;
-            --red: #ff3366;
+            --primary-color: #1a237e;
+            --primary-dark: #0d1b3a;
+            --accent-color: #d4af37;
+            --accent-light: #f4e18a;
+            --highlight-color: #ff6b35;
+            --text-color: #ffffff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --success-color: #00ff88;
+            --danger-color: #ff3366;
+            --font-display: 'Playfair Display', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-mono: 'Roboto Mono', monospace;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at center, var(--navy) 0%, var(--navy-dark) 100%);
-            color: var(--white);
+            font-family: var(--font-body);
+            background: radial-gradient(ellipse at center, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--text-color);
             min-height: 100vh;
             position: relative;
+        }
+
+        /* Fundo personalizado */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.1;
+            background-size: cover;
+            background-position: center;
         }
 
         /* Fundo estrelas */
@@ -56,7 +73,7 @@
             background: rgba(26, 35, 126, 0.4);
             backdrop-filter: blur(15px);
             padding: 15px 20px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid var(--accent-color);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -71,43 +88,52 @@
         }
 
         .tournament-title {
-            font-size: 1.3rem;
+            font-family: var(--font-display);
+            font-size: 1.4rem;
             font-weight: 700;
-            color: var(--orange);
+            color: var(--highlight-color);
             text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
             cursor: pointer;
         }
 
         .tournament-info {
-            color: var(--gold);
+            color: var(--accent-color);
             font-size: 0.9rem;
             font-weight: 600;
         }
 
-        .logo-chip {
+        .custom-logo {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: conic-gradient(from 0deg, var(--gold), #8b7d2e, var(--gold));
+            background: conic-gradient(from 0deg, var(--accent-color), #8b7d2e, var(--accent-color));
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 3px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .custom-logo:hover {
+            transform: scale(1.1);
         }
 
         .logo-inner {
             width: 100%;
             height: 100%;
-            background: var(--navy);
+            background: var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid var(--gold);
-            font-family: 'Orbitron', monospace;
+            border: 1px solid var(--accent-color);
+            font-family: var(--font-display);
             font-size: 0.7rem;
             font-weight: 900;
-            color: var(--gold);
+            color: var(--accent-color);
+            background-size: cover;
+            background-position: center;
         }
 
         /* Tabs */
@@ -127,22 +153,23 @@
         .tab-btn {
             background: transparent;
             border: none;
-            color: var(--gray);
+            color: var(--text-secondary);
             padding: 15px 30px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 600;
+            font-family: var(--font-body);
             transition: all 0.3s ease;
             border-bottom: 3px solid transparent;
         }
 
         .tab-btn.active {
-            color: var(--gold);
-            border-bottom-color: var(--gold);
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
         }
 
         .tab-btn:hover {
-            color: var(--white);
+            color: var(--text-color);
         }
 
         /* Tab Content */
@@ -190,7 +217,7 @@
             width: 100%;
             margin-bottom: 30px;
             font-size: 1.1rem;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .total-time, .break-time {
@@ -201,23 +228,23 @@
         }
 
         .total-time span, .break-time span {
-            color: var(--gold);
+            color: var(--accent-color);
             font-weight: 700;
         }
 
         /* Main Timer */
         .main-timer {
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-mono);
             font-size: 8rem;
-            font-weight: 900;
-            color: var(--orange);
+            font-weight: 700;
+            color: var(--highlight-color);
             text-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
             margin: 20px 0;
             letter-spacing: 3px;
         }
 
         .main-timer.warning {
-            color: var(--red);
+            color: var(--danger-color);
             animation: pulse 1s infinite;
         }
 
@@ -237,7 +264,7 @@
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--orange), var(--gold));
+            background: linear-gradient(90deg, var(--highlight-color), var(--accent-color));
             border-radius: 10px;
             transition: width 1s linear;
         }
@@ -251,44 +278,46 @@
 
         .control-btn {
             background: rgba(212, 175, 55, 0.1);
-            border: 2px solid var(--gold);
-            color: var(--gold);
+            border: 2px solid var(--accent-color);
+            color: var(--accent-color);
             padding: 12px 20px;
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
             font-size: 1rem;
+            font-family: var(--font-body);
         }
 
         .control-btn:hover {
-            background: var(--gold);
-            color: var(--navy);
+            background: var(--accent-color);
+            color: var(--primary-color);
             transform: translateY(-2px);
         }
 
         .control-btn.play {
             background: rgba(255, 107, 53, 0.2);
-            border-color: var(--orange);
-            color: var(--orange);
+            border-color: var(--highlight-color);
+            color: var(--highlight-color);
             padding: 15px 35px;
             font-size: 1.1rem;
         }
 
         .control-btn.play:hover {
-            background: var(--orange);
+            background: var(--highlight-color);
             color: white;
         }
 
         /* Left Side - Players & Structure */
         .side-title {
-            color: var(--gold);
+            color: var(--accent-color);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 15px;
             font-size: 0.9rem;
             text-align: center;
+            font-family: var(--font-body);
         }
 
         .players-section {
@@ -297,25 +326,25 @@
         }
 
         .players-count {
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-mono);
             font-size: 2.5rem;
-            font-weight: 900;
-            color: var(--white);
+            font-weight: 700;
+            color: var(--text-color);
             margin: 10px 0;
             cursor: pointer;
         }
 
         .players-count:hover {
-            color: var(--gold);
+            color: var(--accent-color);
         }
 
         .avg-stack {
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 0.9rem;
         }
 
         .stack-value {
-            color: var(--gold);
+            color: var(--accent-color);
             font-weight: 700;
         }
 
@@ -344,31 +373,31 @@
 
         .next-level-item.current {
             background: rgba(255, 107, 53, 0.2);
-            border-color: var(--orange);
+            border-color: var(--highlight-color);
             font-weight: 600;
         }
 
         .next-level-item.break {
             background: rgba(0, 255, 136, 0.1);
-            color: var(--green);
+            color: var(--success-color);
             font-style: italic;
         }
 
         .level-num {
-            color: var(--orange);
+            color: var(--highlight-color);
             font-weight: 700;
             width: 30px;
         }
 
         .level-blinds {
-            color: var(--white);
+            color: var(--text-color);
             flex: 1;
             text-align: center;
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-mono);
         }
 
         .level-time {
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 0.8rem;
         }
 
@@ -390,44 +419,45 @@
         }
 
         .blind-label {
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 0.9rem;
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .blind-value {
-            font-family: 'Orbitron', monospace;
+            font-family: var(--font-mono);
             font-size: 3rem;
-            font-weight: 900;
-            color: var(--white);
+            font-weight: 700;
+            color: var(--text-color);
         }
 
         .ante-section {
             background: rgba(212, 175, 55, 0.1);
-            border-color: var(--gold);
+            border-color: var(--accent-color);
         }
 
         .ante-section .blind-value {
-            color: var(--gold);
+            color: var(--accent-color);
             font-size: 2rem;
         }
 
         .ante-input {
             background: transparent;
             border: none;
-            color: var(--gold);
-            font-family: 'Orbitron', monospace;
+            color: var(--accent-color);
+            font-family: var(--font-mono);
             font-size: 2rem;
-            font-weight: 900;
+            font-weight: 700;
             text-align: center;
             width: 100%;
             margin-top: 10px;
         }
 
         .ante-input:focus {
-            outline: 1px solid var(--gold);
+            outline: 1px solid var(--accent-color);
             border-radius: 5px;
         }
 
@@ -442,8 +472,9 @@
         }
 
         .section-title {
-            color: var(--gold);
-            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-family: var(--font-display);
+            font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 20px;
             text-align: center;
@@ -459,18 +490,20 @@
 
         .structure-btn {
             background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            color: var(--gold);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
             padding: 8px 15px;
             border-radius: 12px;
             cursor: pointer;
             font-size: 0.9rem;
+            font-family: var(--font-body);
+            font-weight: 500;
             transition: all 0.2s ease;
         }
 
         .structure-btn:hover {
-            background: var(--gold);
-            color: var(--navy);
+            background: var(--accent-color);
+            color: var(--primary-color);
         }
 
         .structure-list {
@@ -488,7 +521,7 @@
 
         .structure-item.break {
             background: rgba(0, 255, 136, 0.1);
-            border-color: var(--green);
+            border-color: var(--success-color);
         }
 
         .structure-form {
@@ -504,7 +537,7 @@
         }
 
         .form-label {
-            color: var(--gold);
+            color: var(--accent-color);
             font-weight: 600;
             margin-bottom: 5px;
             font-size: 0.9rem;
@@ -513,20 +546,21 @@
         .form-input {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--white);
+            color: var(--text-color);
             padding: 10px;
             border-radius: 8px;
             font-size: 1rem;
+            font-family: var(--font-body);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--gold);
+            border-color: var(--accent-color);
             background: rgba(255, 255, 255, 0.1);
         }
 
         .remove-btn {
-            background: var(--red);
+            background: var(--danger-color);
             border: none;
             color: white;
             padding: 10px 15px;
@@ -534,6 +568,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             font-weight: 600;
+            font-family: var(--font-body);
         }
 
         .remove-btn:hover {
@@ -541,11 +576,118 @@
         }
 
         .break-indicator {
-            color: var(--green);
+            color: var(--success-color);
             font-weight: 700;
             font-style: italic;
             text-align: center;
             font-size: 1.1rem;
+            font-family: var(--font-display);
+        }
+
+        /* Auto-ante toggle */
+        .auto-ante-section {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-left: 10px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Customization Tab */
+        .customization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .color-picker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-input {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .preset-themes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .theme-btn {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-color);
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--text-color);
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: var(--accent-color);
+            color: var(--primary-color);
         }
 
         /* Tournament Tab */
@@ -573,7 +715,7 @@
         }
 
         .payout-pos {
-            color: var(--gold);
+            color: var(--accent-color);
             font-weight: 700;
             text-align: center;
         }
@@ -581,20 +723,21 @@
         .payout-percent {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--white);
+            color: var(--text-color);
             padding: 8px;
             border-radius: 5px;
             text-align: center;
+            font-family: var(--font-body);
         }
 
         .payout-percent:focus {
             outline: none;
-            border-color: var(--gold);
+            border-color: var(--accent-color);
         }
 
         .payout-value {
-            color: var(--gold);
-            font-family: 'Orbitron', monospace;
+            color: var(--accent-color);
+            font-family: var(--font-mono);
             font-weight: 700;
             text-align: center;
         }
@@ -606,10 +749,39 @@
         }
 
         .total-prize-value {
-            color: var(--gold);
-            font-family: 'Orbitron', monospace;
+            color: var(--accent-color);
+            font-family: var(--font-mono);
             font-size: 1.5rem;
             font-weight: 900;
+        }
+
+        /* Logo upload */
+        .logo-upload-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-color);
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo-upload-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
 
         /* Responsive */
@@ -649,7 +821,7 @@
                 font-size: 0.9rem;
             }
             
-            .tournament-grid {
+            .tournament-grid, .customization-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -664,18 +836,20 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--gold);
+            background: var(--accent-color);
             border-radius: 3px;
         }
     </style>
 </head>
 <body>
+    <div class="background-overlay" id="backgroundOverlay"></div>
     <div class="stars"></div>
     
     <div class="header">
         <div class="header-content">
-            <div class="logo-chip">
-                <div class="logo-inner">FPC</div>
+            <div class="custom-logo" onclick="document.getElementById('headerLogoUpload').click()">
+                <div class="logo-inner" id="headerLogo">FPC</div>
+                <input type="file" id="headerLogoUpload" style="display: none;" accept="image/*" onchange="uploadHeaderLogo(event)">
             </div>
             <div class="tournament-title" onclick="editTournamentName()">NOITE DOS FUNDADORES</div>
             <div class="tournament-info" id="tournamentInfo">Buy-in: R$ 60 | 16 Jogadores</div>
@@ -687,6 +861,7 @@
             <button class="tab-btn active" onclick="switchTab('timer')">📺 TIMER</button>
             <button class="tab-btn" onclick="switchTab('config')">⚙️ CONFIGURAÇÕES</button>
             <button class="tab-btn" onclick="switchTab('tournament')">🏆 TORNEIO</button>
+            <button class="tab-btn" onclick="switchTab('customization')">🎨 PERSONALIZAR</button>
         </div>
     </div>
 
@@ -752,7 +927,7 @@
                     </div>
                     
                     <div class="blind-display ante-section">
-                        <div class="blind-label">Ante (opcional)</div>
+                        <div class="blind-label">Ante</div>
                         <input type="number" class="ante-input" id="currentAnte" value="0" min="0" onchange="updateCurrentAnte(this.value)" placeholder="0">
                     </div>
                 </div>
@@ -764,6 +939,20 @@
     <div class="tab-content" id="config-tab">
         <div class="config-section">
             <div class="section-title">Estrutura de Blinds</div>
+            
+            <!-- Auto Ante -->
+            <div class="auto-ante-section">
+                <label style="display: flex; align-items: center; color: var(--accent-color); font-weight: 600;">
+                    Ante Automático (Ante = Big Blind)
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoAnteToggle" onchange="toggleAutoAnte()" checked>
+                        <span class="slider"></span>
+                    </label>
+                </label>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 5px;">
+                    Quando ativado, o ante será automaticamente igual ao big blind
+                </p>
+            </div>
             
             <div class="structure-controls">
                 <button class="structure-btn" onclick="addLevel()">+ Adicionar Nível</button>
@@ -834,6 +1023,94 @@
         </div>
     </div>
 
+    <!-- Customization Tab -->
+    <div class="tab-content" id="customization-tab">
+        <div class="customization-grid">
+            <!-- Logo Upload -->
+            <div class="config-section">
+                <div class="section-title">Logo Personalizado</div>
+                <div class="logo-upload-section">
+                    <div class="logo-preview" onclick="document.getElementById('logoUpload').click()">
+                        <div id="logoPreview" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 900; color: var(--accent-color);">FPC</div>
+                        <input type="file" id="logoUpload" class="logo-upload-input" accept="image/*" onchange="uploadLogo(event)">
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Clique para alterar o logo</p>
+                </div>
+            </div>
+
+            <!-- Themes -->
+            <div class="config-section">
+                <div class="section-title">Temas Pré-definidos</div>
+                <div class="preset-themes">
+                    <button class="theme-btn active" onclick="applyTheme('default')">Padrão</button>
+                    <button class="theme-btn" onclick="applyTheme('dark')">Escuro</button>
+                    <button class="theme-btn" onclick="applyTheme('gold')">Dourado</button>
+                    <button class="theme-btn" onclick="applyTheme('casino')">Cassino</button>
+                    <button class="theme-btn" onclick="applyTheme('neon')">Neon</button>
+                    <button class="theme-btn" onclick="applyTheme('elegant')">Elegante</button>
+                </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="config-section">
+                <div class="section-title">Cores Personalizadas</div>
+                <div class="color-picker-group">
+                    <div class="color-picker">
+                        <input type="color" class="color-input" id="primaryColor" value="#1a237e" onchange="updateColors()">
+                        <label>Cor Principal</label>
+                    </div>
+                    <div class="color-picker">
+                        <input type="color" class="color-input" id="accentColor" value="#d4af37" onchange="updateColors()">
+                        <label>Cor Secundária</label>
+                    </div>
+                    <div class="color-picker">
+                        <input type="color" class="color-input" id="highlightColor" value="#ff6b35" onchange="updateColors()">
+                        <label>Cor Destaque</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div class="config-section">
+                <div class="section-title">Fundo Personalizado</div>
+                <div style="text-align: center;">
+                    <button class="structure-btn" onclick="document.getElementById('backgroundUpload').click()">
+                        📸 Alterar Fundo
+                    </button>
+                    <input type="file" id="backgroundUpload" style="display: none;" accept="image/*" onchange="uploadBackground(event)">
+                    <button class="structure-btn" onclick="removeBackground()" style="margin-left: 10px;">
+                        🗑️ Remover Fundo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Font -->
+            <div class="config-section">
+                <div class="section-title">Tipografia</div>
+                <div class="form-group">
+                    <label class="form-label">Fonte do Título</label>
+                    <select class="form-input" id="displayFontSelect" onchange="updateFonts()">
+                        <option value="'Playfair Display', serif">Playfair Display (Elegante)</option>
+                        <option value="'Montserrat', sans-serif">Montserrat (Moderno)</option>
+                        <option value="'Times New Roman', serif">Times New Roman (Clássico)</option>
+                        <option value="'Georgia', serif">Georgia (Tradicional)</option>
+                        <option value="'Oswald', sans-serif">Oswald (Bold)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Fonte do Corpo</label>
+                    <select class="form-input" id="bodyFontSelect" onchange="updateFonts()">
+                        <option value="'Montserrat', sans-serif">Montserrat (Recomendado)</option>
+                        <option value="'Open Sans', sans-serif">Open Sans (Limpo)</option>
+                        <option value="'Lato', sans-serif">Lato (Friendly)</option>
+                        <option value="'Roboto', sans-serif">Roboto (Google)</option>
+                        <option value="Arial, sans-serif">Arial (Simples)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Estado do jogo
         let gameState = {
@@ -848,7 +1125,8 @@
             fee: 0,
             startingChips: 5000,
             tournamentName: "NOITE DOS FUNDADORES",
-            currentTab: 'timer'
+            currentTab: 'timer',
+            autoAnte: true
         };
 
         // Estrutura de blinds
@@ -857,9 +1135,9 @@
             { level: 2, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' }, // atual
             { level: 3, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
             { level: 4, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
-            { level: 5, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
-            { level: 6, sb: 60, bb: 120, ante: 0, duration: 15, type: 'normal' },
-            { level: 7, sb: 75, bb: 150, ante: 0, duration: 15, type: 'normal' },
+            { level: 5, sb: 50, bb: 100, ante: 50, duration: 15, type: 'normal' }, // com ante
+            { level: 6, sb: 60, bb: 120, ante: 60, duration: 15, type: 'normal' },
+            { level: 7, sb: 75, bb: 150, ante: 75, duration: 15, type: 'normal' },
             { level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break' }
         ];
 
@@ -870,6 +1148,22 @@
             { pos: 3, percent: 20 },
             { pos: 4, percent: 10 }
         ];
+
+        // Configurações visuais
+        let visualSettings = {
+            logo: null,
+            background: null,
+            theme: 'default',
+            colors: {
+                primary: '#1a237e',
+                accent: '#d4af37',
+                highlight: '#ff6b35'
+            },
+            fonts: {
+                display: "'Playfair Display', serif",
+                body: "'Montserrat', sans-serif"
+            }
+        };
 
         let timerId = null;
         let audioCtx = null;
@@ -884,6 +1178,7 @@
             renderStructureConfig();
             renderPayouts();
             loadState();
+            applyAutoAnte(); // Aplicar ante automático na inicialização
         }
 
         // Audio
@@ -900,7 +1195,7 @@
             osc.stop(audioCtx.currentTime + dur/1000);
         }
 
-        // Timer
+        // Timer functions (mesmo código anterior)
         function formatTime(seconds) {
             const m = Math.floor(seconds / 60);
             const s = seconds % 60;
@@ -972,6 +1267,34 @@
             saveState();
         }
 
+        // Auto Ante
+        function toggleAutoAnte() {
+            gameState.autoAnte = document.getElementById('autoAnteToggle').checked;
+            if (gameState.autoAnte) {
+                applyAutoAnte();
+            }
+            renderStructureConfig();
+            updateDisplay();
+        }
+
+        function applyAutoAnte() {
+            if (!gameState.autoAnte) return;
+            
+            let anteStarted = false;
+            structure.forEach(level => {
+                if (level.type === 'normal') {
+                    // Se já existe ante em algum nível, começa a aplicar
+                    if (level.ante > 0) anteStarted = true;
+                    
+                    // Se ante já começou, aplica ante = big blind
+                    if (anteStarted) {
+                        level.ante = level.bb;
+                    }
+                }
+            });
+        }
+
+        // Render functions (mesmas do código anterior, mas com melhores fontes)
         function renderNextLevels() {
             const list = document.getElementById('nextLevels');
             list.innerHTML = '';
@@ -1019,6 +1342,7 @@
             }
         }
 
+        // Timer controls (mesmo código anterior)
         function goToLevel(index) {
             if (gameState.isRunning) {
                 if (confirm('Pausar timer e ir para este nível?')) {
@@ -1103,11 +1427,9 @@
 
         // Tabs
         function switchTab(tab) {
-            // Remove active from all tabs
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            // Add active to selected tab
             document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
             document.getElementById(`${tab}-tab`).classList.add('active');
             
@@ -1115,7 +1437,7 @@
             saveState();
         }
 
-        // Structure Config
+        // Structure Config (melhorado com auto-ante)
         function renderStructureConfig() {
             const container = document.getElementById('structureList');
             container.innerHTML = '';
@@ -1129,7 +1451,7 @@
                         <div class="break-indicator">☕ INTERVALO ${i + 1}</div>
                         <div class="structure-form">
                             <div class="form-group">
-                                <label class="form-label">Duração:</label>
+                                <label class="form-label">Duração (min):</label>
                                 <input type="number" class="form-input" value="${level.duration}" min="1" max="60" onchange="updateStructure(${i}, 'duration', this.value)">
                             </div>
                             <div class="form-group">
@@ -1155,11 +1477,11 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Big:</label>
-                                <input type="number" class="form-input" value="${level.bb}" min="1" onchange="updateStructure(${i}, 'bb', this.value)">
+                                <input type="number" class="form-input" value="${level.bb}" min="1" onchange="updateStructure(${i}, 'bb', this.value); updateAutoAnteForLevel(${i})">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Ante (opcional):</label>
-                                <input type="number" class="form-input" value="${level.ante}" min="0" onchange="updateStructure(${i}, 'ante', this.value)">
+                                <label class="form-label">Ante:</label>
+                                <input type="number" class="form-input" value="${level.ante}" min="0" onchange="updateStructure(${i}, 'ante', this.value)" ${gameState.autoAnte && level.ante > 0 ? 'style="background-color: rgba(212, 175, 55, 0.2);"' : ''}>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Ação:</label>
@@ -1173,20 +1495,36 @@
             });
         }
 
+        function updateAutoAnteForLevel(index) {
+            if (gameState.autoAnte && structure[index].ante > 0) {
+                structure[index].ante = structure[index].bb;
+                renderStructureConfig();
+                updateDisplay();
+            }
+        }
+
         function updateStructure(index, field, value) {
             structure[index][field] = parseInt(value) || 0;
+            
+            // Se alterou o big blind e tem ante ativo, atualiza ante automaticamente
+            if (field === 'bb' && gameState.autoAnte && structure[index].ante > 0) {
+                structure[index].ante = structure[index].bb;
+                renderStructureConfig();
+            }
+            
             if (index === gameState.currentLevel && field === 'duration') {
                 gameState.timeLeft = Math.min(gameState.timeLeft, parseInt(value) * 60);
             }
             updateDisplay();
         }
 
+        // Structure management (mesmo código anterior)
         function addLevel() {
             const newLevel = {
                 level: structure.filter(s => s.type === 'normal').length + 1,
                 sb: 100,
                 bb: 200,
-                ante: 0,
+                ante: gameState.autoAnte ? 200 : 0, // Se auto-ante ativo, já começa com ante
                 duration: 15,
                 type: 'normal'
             };
@@ -1227,10 +1565,10 @@
                     { level: 2, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
                     { level: 3, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
                     { level: 4, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
-                    { level: 5, sb: 75, bb: 150, ante: 25, duration: 15, type: 'normal' },
+                    { level: 5, sb: 75, bb: 150, ante: 150, duration: 15, type: 'normal' }, // Começa o ante
                     { level: 0, sb: 0, bb: 0, ante: 0, duration: 10, type: 'break' },
-                    { level: 6, sb: 100, bb: 200, ante: 25, duration: 15, type: 'normal' },
-                    { level: 7, sb: 150, bb: 300, ante: 50, duration: 15, type: 'normal' }
+                    { level: 6, sb: 100, bb: 200, ante: 200, duration: 15, type: 'normal' },
+                    { level: 7, sb: 150, bb: 300, ante: 300, duration: 15, type: 'normal' }
                 ];
                 gameState.currentLevel = 0;
                 renderStructureConfig();
@@ -1243,7 +1581,7 @@
             saveState();
         }
 
-        // Tournament Settings
+        // Tournament settings (mesmo código anterior)
         function updateTournamentName() {
             gameState.tournamentName = document.getElementById('tournamentNameInput').value;
             document.querySelector('.tournament-title').textContent = gameState.tournamentName;
@@ -1270,7 +1608,7 @@
             document.getElementById('startingChipsInput').value = gameState.startingChips;
         }
 
-        // Payouts
+        // Payouts (mesmo código anterior)
         function renderPayouts() {
             const list = document.getElementById('payoutList');
             const totalPrize = gameState.totalPlayers * gameState.buyin;
@@ -1316,13 +1654,136 @@
             
             if (confirm('Remover esta posição?')) {
                 payouts.splice(index, 1);
-                // Renumber positions
                 payouts.forEach((p, i) => p.pos = i + 1);
                 renderPayouts();
             }
         }
 
-        // Editors
+        // CUSTOMIZATION FUNCTIONS
+        function uploadLogo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const logoPreview = document.getElementById('logoPreview');
+                    const headerLogo = document.getElementById('headerLogo');
+                    
+                    logoPreview.style.backgroundImage = `url(${e.target.result})`;
+                    logoPreview.style.backgroundSize = 'cover';
+                    logoPreview.style.backgroundPosition = 'center';
+                    logoPreview.innerHTML = '';
+                    
+                    headerLogo.style.backgroundImage = `url(${e.target.result})`;
+                    headerLogo.style.backgroundSize = 'cover';
+                    headerLogo.style.backgroundPosition = 'center';
+                    headerLogo.innerHTML = '';
+                    
+                    visualSettings.logo = e.target.result;
+                    saveState();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function uploadHeaderLogo(event) {
+            uploadLogo(event);
+        }
+
+        function uploadBackground(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('backgroundOverlay').style.backgroundImage = `url(${e.target.result})`;
+                    visualSettings.background = e.target.result;
+                    saveState();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeBackground() {
+            document.getElementById('backgroundOverlay').style.backgroundImage = 'none';
+            visualSettings.background = null;
+            saveState();
+        }
+
+        function updateColors() {
+            const primary = document.getElementById('primaryColor').value;
+            const accent = document.getElementById('accentColor').value;
+            const highlight = document.getElementById('highlightColor').value;
+            
+            document.documentElement.style.setProperty('--primary-color', primary);
+            document.documentElement.style.setProperty('--accent-color', accent);
+            document.documentElement.style.setProperty('--highlight-color', highlight);
+            
+            visualSettings.colors = { primary, accent, highlight };
+            saveState();
+        }
+
+        function updateFonts() {
+            const display = document.getElementById('displayFontSelect').value;
+            const body = document.getElementById('bodyFontSelect').value;
+            
+            document.documentElement.style.setProperty('--font-display', display);
+            document.documentElement.style.setProperty('--font-body', body);
+            
+            visualSettings.fonts = { display, body };
+            saveState();
+        }
+
+        function applyTheme(theme) {
+            // Remove active from all theme buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            // Add active to clicked button
+            event.target.classList.add('active');
+            
+            const themes = {
+                default: {
+                    primary: '#1a237e',
+                    accent: '#d4af37',
+                    highlight: '#ff6b35'
+                },
+                dark: {
+                    primary: '#0a0a0a',
+                    accent: '#888888',
+                    highlight: '#ff3333'
+                },
+                gold: {
+                    primary: '#2c1810',
+                    accent: '#ffd700',
+                    highlight: '#ffaa00'
+                },
+                casino: {
+                    primary: '#0d2818',
+                    accent: '#00ff88',
+                    highlight: '#ff0066'
+                },
+                neon: {
+                    primary: '#001122',
+                    accent: '#00ffff',
+                    highlight: '#ff00ff'
+                },
+                elegant: {
+                    primary: '#1a1a2e',
+                    accent: '#e94560',
+                    highlight: '#f5af19'
+                }
+            };
+            
+            if (themes[theme]) {
+                const t = themes[theme];
+                document.getElementById('primaryColor').value = t.primary;
+                document.getElementById('accentColor').value = t.accent;
+                document.getElementById('highlightColor').value = t.highlight;
+                updateColors();
+            }
+            
+            visualSettings.theme = theme;
+            saveState();
+        }
+
+        // Editors (mesmo código anterior)
         function editPlayers() {
             const newTotal = prompt('Total de jogadores:', gameState.totalPlayers);
             if (newTotal && !isNaN(parseInt(newTotal))) {
@@ -1341,9 +1802,14 @@
             }
         }
 
-        // Storage
+        // Storage (expandido para incluir configurações visuais)
         function saveState() {
-            localStorage.setItem('fpc-tournament', JSON.stringify({ gameState, structure, payouts }));
+            localStorage.setItem('fpc-tournament', JSON.stringify({ 
+                gameState, 
+                structure, 
+                payouts, 
+                visualSettings 
+            }));
         }
 
         function loadState() {
@@ -1354,8 +1820,41 @@
                     gameState = { ...gameState, ...data.gameState };
                     structure = data.structure || structure;
                     payouts = data.payouts || payouts;
+                    visualSettings = { ...visualSettings, ...data.visualSettings };
+                    
+                    // Apply visual settings
+                    if (visualSettings.logo) {
+                        const logoPreview = document.getElementById('logoPreview');
+                        const headerLogo = document.getElementById('headerLogo');
+                        logoPreview.style.backgroundImage = `url(${visualSettings.logo})`;
+                        logoPreview.style.backgroundSize = 'cover';
+                        logoPreview.style.backgroundPosition = 'center';
+                        logoPreview.innerHTML = '';
+                        headerLogo.style.backgroundImage = `url(${visualSettings.logo})`;
+                        headerLogo.style.backgroundSize = 'cover';
+                        headerLogo.style.backgroundPosition = 'center';
+                        headerLogo.innerHTML = '';
+                    }
+                    
+                    if (visualSettings.background) {
+                        document.getElementById('backgroundOverlay').style.backgroundImage = `url(${visualSettings.background})`;
+                    }
+                    
+                    if (visualSettings.colors) {
+                        document.getElementById('primaryColor').value = visualSettings.colors.primary;
+                        document.getElementById('accentColor').value = visualSettings.colors.accent;
+                        document.getElementById('highlightColor').value = visualSettings.colors.highlight;
+                        updateColors();
+                    }
+                    
+                    if (visualSettings.fonts) {
+                        document.getElementById('displayFontSelect').value = visualSettings.fonts.display;
+                        document.getElementById('bodyFontSelect').value = visualSettings.fonts.body;
+                        updateFonts();
+                    }
                     
                     document.querySelector('.tournament-title').textContent = gameState.tournamentName;
+                    document.getElementById('autoAnteToggle').checked = gameState.autoAnte;
                     
                     if (gameState.currentTab) {
                         switchTab(gameState.currentTab);
@@ -1368,7 +1867,7 @@
             } catch (e) {}
         }
 
-        // Keyboard
+        // Keyboard (mesmo código anterior)
         document.addEventListener('keydown', (e) => {
             if (gameState.currentTab === 'timer') {
                 if (e.code === 'Space') {
