@@ -1406,7 +1406,7 @@
         }
 
         @keyframes tickerScroll {
-            0%   { transform: translateX(100%); }
+            0%   { transform: translateX(0%); }
             100% { transform: translateX(-100%); }
         }
 
@@ -2594,13 +2594,15 @@
                 `;
                 list.appendChild(div);
             });
+
+            // Always sync ticker immediately — no delay
+            updateTicker();
+            saveState();
         }
 
         function updatePayout(index, field, value) {
             payouts[index][field] = parseInt(value) || 0;
-            renderPayouts();
-            saveState();
-            updateTicker();
+            renderPayouts(); // renderPayouts already calls updateTicker + saveState
         }
 
         function addPayout() {
@@ -3138,8 +3140,10 @@
 
         function buildTickerItems() {
             const basePrize   = (gameState.totalPlayers || 16) * (gameState.buyin || 60);
-            const additional  = gameState.additionalPrize || 0;
-            const totalPrize  = basePrize + additional;
+            // Read directly from input — always fresh, no stale state
+            const additionalEl = document.getElementById('additionalPrizeInput');
+            const additional   = additionalEl ? (parseInt(additionalEl.value) || 0) : (gameState.additionalPrize || 0);
+            const totalPrize   = basePrize + additional;
 
             if (!payouts || payouts.length === 0) return '';
 
@@ -3163,12 +3167,14 @@
             const track = document.getElementById('tickerTrack');
             if (!track) return;
             const html = buildTickerItems();
+            if (!html) return;
             track.innerHTML = html;
 
-            // Adjust animation speed based on content length
-            const itemCount  = payouts.length;
-            const duration   = Math.max(12, itemCount * 5);
-            track.style.animationDuration = duration + 's';
+            // Restart animation so new values show immediately
+            track.style.animation = 'none';
+            track.offsetHeight; // force reflow
+            const duration = Math.max(10, payouts.length * 4);
+            track.style.animation = `tickerScroll ${duration}s linear infinite`;
         }
 
         // Call updateTicker whenever payouts or prize changes
