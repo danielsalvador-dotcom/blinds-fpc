@@ -16,7 +16,6 @@
             --navy: #1a237e;
             --navy-dark: #0d1b3a;
             --gold: #d4af37;
-            --gold-light: #f4e18a;
             --orange: #ff6b35;
             --white: #ffffff;
             --gray: rgba(255,255,255,0.7);
@@ -30,65 +29,144 @@
             color: var(--white);
             min-height: 100vh;
             position: relative;
-            overflow-x: hidden;
         }
 
-        /* Fundo animado */
+        /* Fundo estrelas */
         .stars {
             position: fixed;
             width: 100%;
             height: 100%;
             background-image: 
                 radial-gradient(2px 2px at 20px 30px, #fff, transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.8), transparent),
                 radial-gradient(1px 1px at 90px 40px, #fff, transparent);
             background-repeat: repeat;
             background-size: 200px 100px;
-            animation: twinkle 3s ease-in-out infinite alternate;
+            animation: twinkle 4s ease-in-out infinite alternate;
             z-index: -1;
         }
 
         @keyframes twinkle {
-            0% { opacity: 0.3; }
+            0% { opacity: 0.4; }
             100% { opacity: 1; }
         }
 
         /* Header */
         .header {
-            background: rgba(26, 35, 126, 0.3);
-            backdrop-filter: blur(10px);
+            background: rgba(26, 35, 126, 0.4);
+            backdrop-filter: blur(15px);
             padding: 15px 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .tournament-title {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--orange);
             text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+            cursor: pointer;
         }
 
-        .plan-info {
-            background: rgba(212, 175, 55, 0.2);
-            padding: 5px 15px;
-            border-radius: 15px;
+        .tournament-info {
+            color: var(--gold);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .logo-chip {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--gold), #8b7d2e, var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: 1px solid var(--gold);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            font-weight: 900;
             color: var(--gold);
         }
 
-        /* Main Layout */
-        .container {
-            display: grid;
-            grid-template-columns: 280px 1fr 280px;
-            gap: 20px;
-            padding: 20px;
-            height: calc(100vh - 80px);
+        /* Tabs */
+        .tabs {
+            background: rgba(26, 35, 126, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0 20px;
         }
 
-        .panel {
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            padding: 15px 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--gold);
+            border-bottom-color: var(--gold);
+        }
+
+        .tab-btn:hover {
+            color: var(--white);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: calc(100vh - 140px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Timer Tab */
+        .timer-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 160px);
+        }
+
+        .timer-side {
             background: rgba(26, 35, 126, 0.2);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.3);
@@ -97,196 +175,7 @@
             overflow-y: auto;
         }
 
-        .panel-title {
-            color: var(--gold);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        /* Logo */
-        .logo-section {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .fpc-logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 10px;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .fpc-logo:hover {
-            transform: scale(1.05);
-        }
-
-        .chip-container {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, var(--gold), #8b7d2e, var(--gold), #8b7d2e, var(--gold), #8b7d2e, var(--gold), #8b7d2e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-            padding: 6px;
-        }
-
-        .chip-inner {
-            width: 100%;
-            height: 100%;
-            background: var(--navy);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--gold);
-            position: relative;
-        }
-
-        .chip-fpc {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: var(--gold);
-            line-height: 1;
-            margin-bottom: 2px;
-        }
-
-        .chip-sub {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.35rem;
-            font-weight: 600;
-            color: var(--gold);
-            text-align: center;
-            line-height: 1.1;
-            letter-spacing: 0.5px;
-        }
-
-        .logo-upload {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        /* Structure Panel */
-        .structure-controls {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-            justify-content: center;
-        }
-
-        .control-btn-small {
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 4px 8px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s ease;
-        }
-
-        .control-btn-small:hover {
-            background: var(--gold);
-            color: var(--navy);
-        }
-
-        .structure-list {
-            list-style: none;
-        }
-
-        .structure-item {
-            display: flex;
-            align-items: center;
-            padding: 6px 8px;
-            margin-bottom: 3px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-            font-size: 0.85rem;
-        }
-
-        .structure-item:hover {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: rgba(212, 175, 55, 0.3);
-        }
-
-        .structure-item.active {
-            background: rgba(255, 107, 53, 0.2);
-            border-color: var(--orange);
-            font-weight: 600;
-        }
-
-        .structure-item.break {
-            background: rgba(0, 255, 136, 0.1);
-            border-color: var(--green);
-            color: var(--green);
-            font-style: italic;
-        }
-
-        .level-num {
-            width: 20px;
-            color: var(--orange);
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .level-time {
-            width: 35px;
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-
-        .level-blinds {
-            flex: 1;
-            color: var(--white);
-        }
-
-        .edit-input {
-            background: transparent;
-            border: none;
-            color: inherit;
-            font-size: inherit;
-            width: 30px;
-            text-align: center;
-            padding: 1px;
-        }
-
-        .edit-input:focus {
-            background: rgba(255, 255, 255, 0.1);
-            outline: 1px solid var(--gold);
-            border-radius: 2px;
-        }
-
-        .remove-btn {
-            background: var(--red);
-            border: none;
-            color: white;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 5px;
-        }
-
-        /* Timer Panel */
-        .timer-panel {
+        .timer-center {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -294,23 +183,37 @@
             text-align: center;
         }
 
+        /* Timer Info Top */
         .timer-info-top {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
             color: var(--gray);
-            font-size: 0.9rem;
         }
 
+        .total-time, .break-time {
+            background: rgba(26, 35, 126, 0.3);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .total-time span, .break-time span {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        /* Main Timer */
         .main-timer {
             font-family: 'Orbitron', monospace;
-            font-size: 6rem;
+            font-size: 8rem;
             font-weight: 900;
             color: var(--orange);
-            text-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+            text-shadow: 0 0 40px rgba(255, 107, 53, 0.8);
             margin: 20px 0;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         .main-timer.warning {
@@ -324,11 +227,11 @@
         }
 
         .progress-container {
-            width: 70%;
-            height: 6px;
+            width: 80%;
+            height: 8px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            margin: 15px 0;
+            margin: 20px 0;
             overflow: hidden;
         }
 
@@ -339,101 +242,74 @@
             transition: width 1s linear;
         }
 
-        .blinds-display {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 25px 0;
-        }
-
-        .blind-item {
-            text-align: center;
-        }
-
-        .blind-label {
-            color: var(--gray);
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .blind-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        .blind-value.ante {
-            font-size: 1.5rem;
-            color: var(--gold);
-        }
-
+        /* Timer Controls */
         .timer-controls {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
-        .timer-btn {
+        .control-btn {
             background: rgba(212, 175, 55, 0.1);
             border: 2px solid var(--gold);
             color: var(--gold);
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 20px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            font-size: 1rem;
         }
 
-        .timer-btn:hover {
+        .control-btn:hover {
             background: var(--gold);
             color: var(--navy);
             transform: translateY(-2px);
         }
 
-        .timer-btn.play {
+        .control-btn.play {
             background: rgba(255, 107, 53, 0.2);
             border-color: var(--orange);
             color: var(--orange);
-            padding: 12px 30px;
+            padding: 15px 35px;
+            font-size: 1.1rem;
         }
 
-        .timer-btn.play:hover {
+        .control-btn.play:hover {
             background: var(--orange);
             color: white;
         }
 
-        /* Info Panel */
-        .info-section {
-            margin-bottom: 20px;
-        }
-
-        .info-title {
+        /* Left Side - Players & Structure */
+        .side-title {
             color: var(--gold);
-            font-size: 0.8rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
         }
 
-        .players-display {
+        .players-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .players-count {
             font-family: 'Orbitron', monospace;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 900;
             color: var(--white);
-            text-align: center;
-            margin: 8px 0;
+            margin: 10px 0;
             cursor: pointer;
         }
 
-        .players-display:hover {
+        .players-count:hover {
             color: var(--gold);
         }
 
         .avg-stack {
-            text-align: center;
             color: var(--gray);
             font-size: 0.9rem;
         }
@@ -443,58 +319,338 @@
             font-weight: 700;
         }
 
-        .payout-list {
+        .next-levels {
             list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        .payout-item {
+        .next-level-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 8px;
+            border: 1px solid transparent;
             font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .next-level-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .next-level-item.current {
+            background: rgba(255, 107, 53, 0.2);
+            border-color: var(--orange);
+            font-weight: 600;
+        }
+
+        .next-level-item.break {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--green);
+            font-style: italic;
+        }
+
+        .level-num {
+            color: var(--orange);
+            font-weight: 700;
+            width: 30px;
+        }
+
+        .level-blinds {
+            color: var(--white);
+            flex: 1;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .level-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+
+        /* Right Side - Blinds */
+        .blinds-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .blind-display {
+            background: rgba(26, 35, 126, 0.4);
+            border: 2px solid rgba(212, 175, 55, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .blind-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .blind-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--white);
+        }
+
+        .ante-section {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold);
+        }
+
+        .ante-section .blind-value {
+            color: var(--gold);
+            font-size: 2rem;
+        }
+
+        .ante-input {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .ante-input:focus {
+            outline: 1px solid var(--gold);
+            border-radius: 5px;
+        }
+
+        /* Config Tab */
+        .config-section {
+            background: rgba(26, 35, 126, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: var(--gold);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .structure-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .structure-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .structure-btn:hover {
+            background: var(--gold);
+            color: var(--navy);
+        }
+
+        .structure-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .structure-item {
+            background: rgba(26, 35, 126, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .structure-item.break {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--green);
+        }
+
+        .structure-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .remove-btn {
+            background: var(--red);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .remove-btn:hover {
+            background: #cc2952;
+        }
+
+        .break-indicator {
+            color: var(--green);
+            font-weight: 700;
+            font-style: italic;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Tournament Tab */
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .payout-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payout-item {
+            display: grid;
+            grid-template-columns: 60px 80px 1fr 60px;
+            gap: 10px;
+            align-items: center;
+            padding: 12px;
+            background: rgba(26, 35, 126, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
         }
 
         .payout-pos {
             color: var(--gold);
             font-weight: 700;
-        }
-
-        .payout-value {
-            color: var(--white);
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .payout-value:hover {
-            color: var(--gold);
+            text-align: center;
         }
 
         .payout-percent {
-            color: var(--gray);
-            font-size: 0.8rem;
-            margin-left: 5px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white);
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .payout-percent:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .payout-value {
+            color: var(--gold);
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .total-prize {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1rem;
+        }
+
+        .total-prize-value {
+            color: var(--gold);
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .container {
+            .timer-layout {
                 grid-template-columns: 1fr;
                 grid-template-rows: auto 1fr auto;
                 gap: 15px;
             }
             
-            .panel {
-                max-height: 250px;
-            }
-            
-            .timer-panel {
-                max-height: none;
+            .timer-side {
+                max-height: 300px;
             }
             
             .main-timer {
+                font-size: 5rem;
+            }
+            
+            .structure-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-timer {
                 font-size: 4rem;
+            }
+            
+            .timer-info-top {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+            
+            .tab-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .tournament-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -517,107 +673,182 @@
     <div class="stars"></div>
     
     <div class="header">
-        <div style="color: var(--gray); cursor: pointer;" onclick="goBack()">
-            ← LOBBY DE POKER
+        <div class="header-content">
+            <div class="logo-chip">
+                <div class="logo-inner">FPC</div>
+            </div>
+            <div class="tournament-title" onclick="editTournamentName()">NOITE DOS FUNDADORES</div>
+            <div class="tournament-info" id="tournamentInfo">Buy-in: R$ 60 | 16 Jogadores</div>
         </div>
-        <div class="tournament-title" onclick="editTournamentName()">NOITE DOS FUNDADORES ⚙️ 📋</div>
-        <div class="plan-info">Plano atual: Home Game A</div>
     </div>
 
-    <div class="container">
-        <!-- Left Panel - Structure -->
-        <div class="panel">
-            <div class="panel-title">Estrutura de Blinds</div>
+    <div class="tabs">
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('timer')">📺 TIMER</button>
+            <button class="tab-btn" onclick="switchTab('config')">⚙️ CONFIGURAÇÕES</button>
+            <button class="tab-btn" onclick="switchTab('tournament')">🏆 TORNEIO</button>
+        </div>
+    </div>
+
+    <!-- Timer Tab -->
+    <div class="tab-content active" id="timer-tab">
+        <div class="timer-layout">
+            <!-- Left Side -->
+            <div class="timer-side">
+                <div class="side-title">Jogadores</div>
+                <div class="players-section">
+                    <div class="players-count" onclick="editPlayers()">
+                        <span id="activePlayers">16</span>/<span id="totalPlayers">16</span>
+                    </div>
+                    <div class="avg-stack">
+                        PILHA MÉDIA: <span class="stack-value" id="avgStack">5000</span>
+                    </div>
+                </div>
+
+                <div class="side-title">Próximos Níveis</div>
+                <ul class="next-levels" id="nextLevels">
+                    <!-- Preenchido via JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Center -->
+            <div class="timer-center">
+                <div class="timer-info-top">
+                    <div class="total-time">
+                        Total: <span id="totalTimer">2:12:47</span>
+                    </div>
+                    <div class="break-time">
+                        Próximo intervalo: <span id="breakTimer">3 níveis (45 min)</span>
+                    </div>
+                </div>
+
+                <div class="main-timer" id="mainTimer">12:47</div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar" style="width: 65%;"></div>
+                </div>
+
+                <div class="timer-controls">
+                    <button class="control-btn" onclick="prevLevel()">⏮</button>
+                    <button class="control-btn" onclick="adjustTime(-60)">-1m</button>
+                    <button class="control-btn play" id="playBtn" onclick="toggleTimer()">▶ Iniciar</button>
+                    <button class="control-btn" onclick="adjustTime(60)">+1m</button>
+                    <button class="control-btn" onclick="nextLevel()">⏭</button>
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="timer-side">
+                <div class="side-title">Blinds Atuais</div>
+                <div class="blinds-section">
+                    <div class="blind-display">
+                        <div class="blind-label">Small Blind</div>
+                        <div class="blind-value" id="currentSB">25</div>
+                    </div>
+                    
+                    <div class="blind-display">
+                        <div class="blind-label">Big Blind</div>
+                        <div class="blind-value" id="currentBB">50</div>
+                    </div>
+                    
+                    <div class="blind-display ante-section">
+                        <div class="blind-label">Ante (opcional)</div>
+                        <input type="number" class="ante-input" id="currentAnte" value="0" min="0" onchange="updateCurrentAnte(this.value)" placeholder="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Tab -->
+    <div class="tab-content" id="config-tab">
+        <div class="config-section">
+            <div class="section-title">Estrutura de Blinds</div>
             
             <div class="structure-controls">
-                <button class="control-btn-small" onclick="addLevel()">+ Nível</button>
-                <button class="control-btn-small" onclick="addBreak()">+ Pausa</button>
-                <button class="control-btn-small" onclick="resetStructure()">Reset</button>
-            </div>
-            
-            <ul class="structure-list" id="structureList"></ul>
-        </div>
-
-        <!-- Center Panel - Timer -->
-        <div class="panel timer-panel">
-            <div class="timer-info-top">
-                <div id="levelTimer">12:47</div>
-                <div id="totalTimer">2:12:47</div>
+                <button class="structure-btn" onclick="addLevel()">+ Adicionar Nível</button>
+                <button class="structure-btn" onclick="addBreak()">+ Adicionar Intervalo</button>
+                <button class="structure-btn" onclick="resetStructure()">🔄 Resetar</button>
+                <button class="structure-btn" onclick="saveStructure()">💾 Salvar</button>
             </div>
 
-            <div class="main-timer" id="mainTimer">12:47</div>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-
-            <div class="blinds-display">
-                <div class="blind-item">
-                    <div class="blind-label">Small Blind</div>
-                    <div class="blind-value" id="currentSB">25</div>
-                </div>
-                <div class="blind-item">
-                    <div class="blind-label">Big Blind</div>
-                    <div class="blind-value" id="currentBB">50</div>
-                </div>
-                <div class="blind-item" id="anteSection" style="display: none;">
-                    <div class="blind-label">Ante</div>
-                    <div class="blind-value ante" id="currentAnte">5</div>
-                </div>
-            </div>
-
-            <div class="timer-controls">
-                <button class="timer-btn" onclick="prevLevel()">⏮</button>
-                <button class="timer-btn" onclick="adjustTime(-60)">-1m</button>
-                <button class="timer-btn play" id="playBtn" onclick="toggleTimer()">▶ Iniciar</button>
-                <button class="timer-btn" onclick="adjustTime(60)">+1m</button>
-                <button class="timer-btn" onclick="nextLevel()">⏭</button>
+            <div class="structure-list" id="structureList">
+                <!-- Preenchido via JavaScript -->
             </div>
         </div>
+    </div>
 
-        <!-- Right Panel - Info -->
-        <div class="panel">
-            <div class="logo-section">
-                <div class="fpc-logo" onclick="document.getElementById('logoFile').click()">
-                    <div class="chip-container">
-                        <div class="chip-inner" id="chipInner">
-                            <div class="chip-fpc">FPC</div>
-                            <div class="chip-sub">FUNDADORES<br>POKER CLUB</div>
-                        </div>
-                    </div>
-                    <input type="file" id="logoFile" class="logo-upload" accept="image/*" onchange="uploadLogo(event)">
+    <!-- Tournament Tab -->
+    <div class="tab-content" id="tournament-tab">
+        <div class="tournament-grid">
+            <div class="config-section">
+                <div class="section-title">Configurações do Torneio</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nome do Torneio</label>
+                    <input type="text" class="form-input" id="tournamentNameInput" value="NOITE DOS FUNDADORES" onchange="updateTournamentName()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Total de Jogadores</label>
+                    <input type="number" class="form-input" id="totalPlayersInput" value="16" min="2" onchange="updateTournamentSettings()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Jogadores Eliminados</label>
+                    <input type="number" class="form-input" id="eliminatedInput" value="0" min="0" onchange="updateTournamentSettings()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Buy-in (R$)</label>
+                    <input type="number" class="form-input" id="buyinInput" value="60" min="0" onchange="updateTournamentSettings()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Fichas Iniciais</label>
+                    <input type="number" class="form-input" id="startingChipsInput" value="5000" min="1000" onchange="updateTournamentSettings()">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Taxa (R$) - Opcional</label>
+                    <input type="number" class="form-input" id="feeInput" value="0" min="0" onchange="updateTournamentSettings()">
                 </div>
             </div>
 
-            <div class="info-section">
-                <div class="info-title">Jogadores</div>
-                <div class="players-display" onclick="editPlayers()">
-                    <span id="activePlayers">16</span>/<span id="totalPlayers">16</span>
+            <div class="config-section">
+                <div class="section-title">Premiação</div>
+                
+                <div class="total-prize">
+                    <div>Total Arrecadado</div>
+                    <div class="total-prize-value" id="totalPrize">R$ 960</div>
                 </div>
-                <div class="avg-stack">
-                    PILHA MÉDIA<br>
-                    <span class="stack-value" id="avgStack">5000</span>
+                
+                <div class="payout-list" id="payoutList">
+                    <!-- Preenchido via JavaScript -->
                 </div>
-            </div>
 
-            <div class="info-section">
-                <div class="info-title">Pagamentos</div>
-                <ul class="payout-list" id="payoutList"></ul>
+                <button class="structure-btn" onclick="addPayout()" style="width: 100%; margin-top: 15px;">
+                    + Adicionar Posição
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         // Estado do jogo
-        let state = {
+        let gameState = {
             currentLevel: 1,
             timeLeft: 767, // 12:47
             totalTime: 7967, // 2:12:47
             isRunning: false,
             activePlayers: 16,
             totalPlayers: 16,
+            eliminated: 0,
             buyin: 60,
-            tournamentName: "NOITE DOS FUNDADORES"
+            fee: 0,
+            startingChips: 5000,
+            tournamentName: "NOITE DOS FUNDADORES",
+            currentTab: 'timer'
         };
 
         // Estrutura de blinds
@@ -632,12 +863,12 @@
             { level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break' }
         ];
 
-        // Pagamentos
+        // Pagamentos (apenas percentuais)
         let payouts = [
-            { pos: 1, amount: 384, percent: 40 },
-            { pos: 2, amount: 288, percent: 30 },
-            { pos: 3, amount: 192, percent: 20 },
-            { pos: 4, amount: 96, percent: 10 }
+            { pos: 1, percent: 40 },
+            { pos: 2, percent: 30 },
+            { pos: 3, percent: 20 },
+            { pos: 4, percent: 10 }
         ];
 
         let timerId = null;
@@ -649,9 +880,9 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             } catch(e) {}
             
-            renderStructure();
-            renderPayouts();
             updateDisplay();
+            renderStructureConfig();
+            renderPayouts();
             loadState();
         }
 
@@ -684,20 +915,19 @@
         }
 
         function updateDisplay() {
-            const level = structure[state.currentLevel];
+            const level = structure[gameState.currentLevel];
             
             // Timer
-            document.getElementById('mainTimer').textContent = formatTime(state.timeLeft);
-            document.getElementById('levelTimer').textContent = formatTime(state.timeLeft);
-            document.getElementById('totalTimer').textContent = formatTotalTime(state.totalTime);
+            document.getElementById('mainTimer').textContent = formatTime(gameState.timeLeft);
+            document.getElementById('totalTimer').textContent = formatTotalTime(gameState.totalTime);
             
             // Progress
-            const progress = (state.timeLeft / (level.duration * 60)) * 100;
+            const progress = (gameState.timeLeft / (level.duration * 60)) * 100;
             document.getElementById('progressBar').style.width = Math.max(0, progress) + '%';
             
             // Warning
             const timer = document.getElementById('mainTimer');
-            if (state.timeLeft <= 60) {
+            if (gameState.timeLeft <= 60) {
                 timer.classList.add('warning');
             } else {
                 timer.classList.remove('warning');
@@ -707,41 +937,114 @@
             if (level.type === 'break') {
                 document.getElementById('currentSB').textContent = 'PAUSA';
                 document.getElementById('currentBB').textContent = '';
-                document.getElementById('anteSection').style.display = 'none';
+                document.getElementById('currentAnte').style.display = 'none';
             } else {
                 document.getElementById('currentSB').textContent = level.sb;
                 document.getElementById('currentBB').textContent = level.bb;
-                if (level.ante > 0) {
-                    document.getElementById('currentAnte').textContent = level.ante;
-                    document.getElementById('anteSection').style.display = 'block';
-                } else {
-                    document.getElementById('anteSection').style.display = 'none';
-                }
+                document.getElementById('currentAnte').value = level.ante;
+                document.getElementById('currentAnte').style.display = 'block';
             }
             
             // Players
-            document.getElementById('activePlayers').textContent = state.activePlayers;
-            document.getElementById('totalPlayers').textContent = state.totalPlayers;
+            gameState.activePlayers = gameState.totalPlayers - gameState.eliminated;
+            document.getElementById('activePlayers').textContent = gameState.activePlayers;
+            document.getElementById('totalPlayers').textContent = gameState.totalPlayers;
             
             // Average stack
-            const totalChips = state.totalPlayers * state.buyin * 1000 / state.buyin;
-            const avgStack = Math.round(totalChips / state.activePlayers);
+            const totalChips = gameState.totalPlayers * gameState.startingChips;
+            const avgStack = Math.round(totalChips / gameState.activePlayers);
             document.getElementById('avgStack').textContent = avgStack.toLocaleString();
             
-            renderStructure();
+            // Tournament info header
+            const totalPrize = gameState.totalPlayers * gameState.buyin;
+            document.getElementById('tournamentInfo').textContent = 
+                `Buy-in: R$ ${gameState.buyin} | ${gameState.totalPlayers} Jogadores | Prize: R$ ${totalPrize}`;
+            
+            // Next levels
+            renderNextLevels();
+            
+            // Break timer
+            updateBreakTimer();
+            
+            // Update tournament inputs
+            updateTournamentInputs();
+            
             saveState();
         }
 
-        function tick() {
-            state.timeLeft--;
-            state.totalTime++;
+        function renderNextLevels() {
+            const list = document.getElementById('nextLevels');
+            list.innerHTML = '';
             
-            if (state.timeLeft <= 0) {
+            for (let i = gameState.currentLevel; i < Math.min(gameState.currentLevel + 6, structure.length); i++) {
+                const level = structure[i];
+                const li = document.createElement('li');
+                li.className = `next-level-item ${i === gameState.currentLevel ? 'current' : ''} ${level.type === 'break' ? 'break' : ''}`;
+                li.onclick = () => goToLevel(i);
+                
+                if (level.type === 'break') {
+                    li.innerHTML = `
+                        <span class="level-num">☕</span>
+                        <span class="level-blinds">INTERVALO</span>
+                        <span class="level-time">${level.duration}m</span>
+                    `;
+                } else {
+                    li.innerHTML = `
+                        <span class="level-num">N${level.level}</span>
+                        <span class="level-blinds">${level.sb} / ${level.bb}</span>
+                        <span class="level-time">${level.duration}m</span>
+                    `;
+                }
+                
+                list.appendChild(li);
+            }
+        }
+
+        function updateBreakTimer() {
+            let levelsToBreak = 0;
+            let timeToBreak = 0;
+            
+            for (let i = gameState.currentLevel + 1; i < structure.length; i++) {
+                if (structure[i].type === 'break') {
+                    levelsToBreak = i - gameState.currentLevel;
+                    break;
+                }
+                timeToBreak += structure[i].duration;
+            }
+            
+            if (levelsToBreak > 0) {
+                document.getElementById('breakTimer').textContent = `${levelsToBreak} níveis (${timeToBreak} min)`;
+            } else {
+                document.getElementById('breakTimer').textContent = 'Não há';
+            }
+        }
+
+        function goToLevel(index) {
+            if (gameState.isRunning) {
+                if (confirm('Pausar timer e ir para este nível?')) {
+                    clearInterval(timerId);
+                    gameState.isRunning = false;
+                    document.getElementById('playBtn').textContent = '▶ Iniciar';
+                } else {
+                    return;
+                }
+            }
+            
+            gameState.currentLevel = index;
+            gameState.timeLeft = structure[index].duration * 60;
+            updateDisplay();
+        }
+
+        function tick() {
+            gameState.timeLeft--;
+            gameState.totalTime++;
+            
+            if (gameState.timeLeft <= 0) {
                 nextLevel(true);
                 return;
             }
             
-            if (state.timeLeft === 60) {
+            if (gameState.timeLeft === 60) {
                 beep(440, 100);
             }
             
@@ -753,36 +1056,29 @@
                 audioCtx.resume();
             }
             
-            state.isRunning = !state.isRunning;
+            gameState.isRunning = !gameState.isRunning;
             const btn = document.getElementById('playBtn');
             
-            if (state.isRunning) {
+            if (gameState.isRunning) {
                 timerId = setInterval(tick, 1000);
                 btn.textContent = '⏸ Pausar';
-                btn.style.background = 'rgba(255, 51, 102, 0.2)';
-                btn.style.borderColor = 'var(--red)';
-                btn.style.color = 'var(--red)';
             } else {
                 clearInterval(timerId);
                 btn.textContent = '▶ Iniciar';
-                btn.style.background = 'rgba(255, 107, 53, 0.2)';
-                btn.style.borderColor = 'var(--orange)';
-                btn.style.color = 'var(--orange)';
             }
         }
 
         function adjustTime(seconds) {
-            state.timeLeft = Math.max(0, state.timeLeft + seconds);
+            gameState.timeLeft = Math.max(0, gameState.timeLeft + seconds);
             updateDisplay();
         }
 
         function nextLevel(auto = false) {
-            if (state.currentLevel < structure.length - 1) {
-                state.currentLevel++;
-                state.timeLeft = structure[state.currentLevel].duration * 60;
+            if (gameState.currentLevel < structure.length - 1) {
+                gameState.currentLevel++;
+                gameState.timeLeft = structure[gameState.currentLevel].duration * 60;
                 
                 if (auto) {
-                    // Level up sound
                     setTimeout(() => beep(660, 150), 0);
                     setTimeout(() => beep(880, 150), 200);
                     setTimeout(() => beep(1100, 300), 400);
@@ -793,66 +1089,95 @@
         }
 
         function prevLevel() {
-            if (state.currentLevel > 0) {
-                state.currentLevel--;
-                state.timeLeft = structure[state.currentLevel].duration * 60;
+            if (gameState.currentLevel > 0) {
+                gameState.currentLevel--;
+                gameState.timeLeft = structure[gameState.currentLevel].duration * 60;
                 updateDisplay();
             }
         }
 
-        // Structure
-        function renderStructure() {
-            const list = document.getElementById('structureList');
-            list.innerHTML = '';
+        function updateCurrentAnte(value) {
+            structure[gameState.currentLevel].ante = parseInt(value) || 0;
+            saveState();
+        }
+
+        // Tabs
+        function switchTab(tab) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active to selected tab
+            document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            gameState.currentTab = tab;
+            saveState();
+        }
+
+        // Structure Config
+        function renderStructureConfig() {
+            const container = document.getElementById('structureList');
+            container.innerHTML = '';
             
             structure.forEach((level, i) => {
-                const li = document.createElement('li');
-                li.className = `structure-item ${i === state.currentLevel ? 'active' : ''} ${level.type === 'break' ? 'break' : ''}`;
-                li.onclick = () => goToLevel(i);
+                const div = document.createElement('div');
+                div.className = `structure-item ${level.type === 'break' ? 'break' : ''}`;
                 
                 if (level.type === 'break') {
-                    li.innerHTML = `
-                        <span class="level-num">☕</span>
-                        <span class="level-time">
-                            <input class="edit-input" type="number" value="${level.duration}" min="1" max="60" 
-                                onchange="updateStructure(${i}, 'duration', this.value)" style="width: 25px;">m
-                        </span>
-                        <span class="level-blinds">PAUSA</span>
-                        <button class="remove-btn" onclick="event.stopPropagation(); removeLevel(${i})">×</button>
+                    div.innerHTML = `
+                        <div class="break-indicator">☕ INTERVALO ${i + 1}</div>
+                        <div class="structure-form">
+                            <div class="form-group">
+                                <label class="form-label">Duração:</label>
+                                <input type="number" class="form-input" value="${level.duration}" min="1" max="60" onchange="updateStructure(${i}, 'duration', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ação:</label>
+                                <button class="remove-btn" onclick="removeLevel(${i})">🗑 Remover</button>
+                            </div>
+                        </div>
                     `;
                 } else {
-                    li.innerHTML = `
-                        <span class="level-num">${level.level}</span>
-                        <span class="level-time">
-                            <input class="edit-input" type="number" value="${level.duration}" min="1" max="60" 
-                                onchange="updateStructure(${i}, 'duration', this.value)" style="width: 25px;">m
-                        </span>
-                        <span class="level-blinds">
-                            <input class="edit-input" type="number" value="${level.sb}" min="1" 
-                                onchange="updateStructure(${i}, 'sb', this.value)"> / 
-                            <input class="edit-input" type="number" value="${level.bb}" min="1" 
-                                onchange="updateStructure(${i}, 'bb', this.value)">
-                            ${level.ante > 0 ? `<br><small>A: <input class="edit-input" type="number" value="${level.ante}" min="0" onchange="updateStructure(${i}, 'ante', this.value)" style="width: 20px;"></small>` : ''}
-                        </span>
-                        <button class="remove-btn" onclick="event.stopPropagation(); removeLevel(${i})">×</button>
+                    div.innerHTML = `
+                        <div class="structure-form">
+                            <div class="form-group">
+                                <label class="form-label">Nível:</label>
+                                <input type="number" class="form-input" value="${level.level}" min="1" onchange="updateStructure(${i}, 'level', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tempo (min):</label>
+                                <input type="number" class="form-input" value="${level.duration}" min="1" max="120" onchange="updateStructure(${i}, 'duration', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Small:</label>
+                                <input type="number" class="form-input" value="${level.sb}" min="1" onchange="updateStructure(${i}, 'sb', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Big:</label>
+                                <input type="number" class="form-input" value="${level.bb}" min="1" onchange="updateStructure(${i}, 'bb', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ante (opcional):</label>
+                                <input type="number" class="form-input" value="${level.ante}" min="0" onchange="updateStructure(${i}, 'ante', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Ação:</label>
+                                <button class="remove-btn" onclick="removeLevel(${i})">🗑 Remover</button>
+                            </div>
+                        </div>
                     `;
                 }
                 
-                list.appendChild(li);
+                container.appendChild(div);
             });
         }
 
         function updateStructure(index, field, value) {
             structure[index][field] = parseInt(value) || 0;
-            updateDisplay();
-        }
-
-        function goToLevel(index) {
-            if (state.isRunning) {
-                toggleTimer();
+            if (index === gameState.currentLevel && field === 'duration') {
+                gameState.timeLeft = Math.min(gameState.timeLeft, parseInt(value) * 60);
             }
-            state.currentLevel = index;
-            state.timeLeft = structure[index].duration * 60;
             updateDisplay();
         }
 
@@ -866,110 +1191,159 @@
                 type: 'normal'
             };
             structure.push(newLevel);
-            renderStructure();
+            renderStructureConfig();
         }
 
         function addBreak() {
             structure.push({
                 level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break'
             });
-            renderStructure();
+            renderStructureConfig();
         }
 
         function removeLevel(index) {
-            if (structure.length <= 1) return;
-            structure.splice(index, 1);
-            if (state.currentLevel >= structure.length) {
-                state.currentLevel = structure.length - 1;
+            if (structure.length <= 1) {
+                alert('Deve ter pelo menos 1 nível!');
+                return;
             }
-            if (state.currentLevel >= index && state.currentLevel > 0) {
-                state.currentLevel--;
+            
+            if (confirm('Remover este nível?')) {
+                structure.splice(index, 1);
+                if (gameState.currentLevel >= structure.length) {
+                    gameState.currentLevel = structure.length - 1;
+                }
+                if (gameState.currentLevel >= index && gameState.currentLevel > 0) {
+                    gameState.currentLevel--;
+                }
+                renderStructureConfig();
+                updateDisplay();
             }
-            updateDisplay();
         }
 
         function resetStructure() {
-            if (confirm('Resetar estrutura?')) {
+            if (confirm('Resetar estrutura para o padrão?')) {
                 structure = [
                     { level: 1, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' },
-                    { level: 2, sb: 25, bb: 50, ante: 0, duration: 15, type: 'normal' },
-                    { level: 3, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
-                    { level: 4, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
-                    { level: 5, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
-                    { level: 6, sb: 60, bb: 120, ante: 0, duration: 15, type: 'normal' },
-                    { level: 7, sb: 75, bb: 150, ante: 0, duration: 15, type: 'normal' },
-                    { level: 0, sb: 0, bb: 0, ante: 0, duration: 15, type: 'break' }
+                    { level: 2, sb: 30, bb: 60, ante: 0, duration: 15, type: 'normal' },
+                    { level: 3, sb: 40, bb: 80, ante: 0, duration: 15, type: 'normal' },
+                    { level: 4, sb: 50, bb: 100, ante: 0, duration: 15, type: 'normal' },
+                    { level: 5, sb: 75, bb: 150, ante: 25, duration: 15, type: 'normal' },
+                    { level: 0, sb: 0, bb: 0, ante: 0, duration: 10, type: 'break' },
+                    { level: 6, sb: 100, bb: 200, ante: 25, duration: 15, type: 'normal' },
+                    { level: 7, sb: 150, bb: 300, ante: 50, duration: 15, type: 'normal' }
                 ];
-                state.currentLevel = 1;
+                gameState.currentLevel = 0;
+                renderStructureConfig();
                 updateDisplay();
             }
+        }
+
+        function saveStructure() {
+            alert('Estrutura salva com sucesso!');
+            saveState();
+        }
+
+        // Tournament Settings
+        function updateTournamentName() {
+            gameState.tournamentName = document.getElementById('tournamentNameInput').value;
+            document.querySelector('.tournament-title').textContent = gameState.tournamentName;
+            updateDisplay();
+        }
+
+        function updateTournamentSettings() {
+            gameState.totalPlayers = parseInt(document.getElementById('totalPlayersInput').value) || 16;
+            gameState.eliminated = parseInt(document.getElementById('eliminatedInput').value) || 0;
+            gameState.buyin = parseInt(document.getElementById('buyinInput').value) || 60;
+            gameState.fee = parseInt(document.getElementById('feeInput').value) || 0;
+            gameState.startingChips = parseInt(document.getElementById('startingChipsInput').value) || 5000;
+            
+            updateDisplay();
+            renderPayouts();
+        }
+
+        function updateTournamentInputs() {
+            document.getElementById('tournamentNameInput').value = gameState.tournamentName;
+            document.getElementById('totalPlayersInput').value = gameState.totalPlayers;
+            document.getElementById('eliminatedInput').value = gameState.eliminated;
+            document.getElementById('buyinInput').value = gameState.buyin;
+            document.getElementById('feeInput').value = gameState.fee;
+            document.getElementById('startingChipsInput').value = gameState.startingChips;
         }
 
         // Payouts
         function renderPayouts() {
             const list = document.getElementById('payoutList');
+            const totalPrize = gameState.totalPlayers * gameState.buyin;
+            
+            document.getElementById('totalPrize').textContent = `R$ ${totalPrize.toLocaleString()}`;
+            
             list.innerHTML = '';
             
             payouts.forEach((p, i) => {
-                const li = document.createElement('li');
-                li.className = 'payout-item';
-                li.innerHTML = `
-                    <span class="payout-pos">${p.pos}º</span>
-                    <div>
-                        <span class="payout-value" onclick="editPayout(${i})">${p.amount}</span>
-                        <span class="payout-percent">${p.percent}%</span>
-                    </div>
+                const value = Math.round((totalPrize * p.percent) / 100);
+                
+                const div = document.createElement('div');
+                div.className = 'payout-item';
+                div.innerHTML = `
+                    <div class="payout-pos">${p.pos}º lugar</div>
+                    <input type="number" class="payout-percent" value="${p.percent}" min="0" max="100" onchange="updatePayout(${i}, 'percent', this.value)">
+                    <div class="payout-value">R$ ${value.toLocaleString()}</div>
+                    <button class="remove-btn" onclick="removePayout(${i})">×</button>
                 `;
-                list.appendChild(li);
+                list.appendChild(div);
             });
         }
 
-        function editPayout(index) {
-            const newAmount = prompt(`Valor do ${payouts[index].pos}º lugar:`, payouts[index].amount);
-            if (newAmount && !isNaN(parseInt(newAmount))) {
-                payouts[index].amount = parseInt(newAmount);
+        function updatePayout(index, field, value) {
+            payouts[index][field] = parseInt(value) || 0;
+            renderPayouts();
+            saveState();
+        }
+
+        function addPayout() {
+            payouts.push({
+                pos: payouts.length + 1,
+                percent: 5
+            });
+            renderPayouts();
+        }
+
+        function removePayout(index) {
+            if (payouts.length <= 1) {
+                alert('Deve ter pelo menos 1 posição premiada!');
+                return;
+            }
+            
+            if (confirm('Remover esta posição?')) {
+                payouts.splice(index, 1);
+                // Renumber positions
+                payouts.forEach((p, i) => p.pos = i + 1);
                 renderPayouts();
-                saveState();
             }
         }
 
         // Editors
         function editPlayers() {
-            const newActive = prompt('Jogadores ativos:', state.activePlayers);
-            if (newActive && !isNaN(parseInt(newActive))) {
-                state.activePlayers = Math.max(1, parseInt(newActive));
+            const newTotal = prompt('Total de jogadores:', gameState.totalPlayers);
+            if (newTotal && !isNaN(parseInt(newTotal))) {
+                gameState.totalPlayers = Math.max(2, parseInt(newTotal));
                 updateDisplay();
             }
         }
 
         function editTournamentName() {
-            const newName = prompt('Nome do torneio:', state.tournamentName);
-            if (newName) {
-                state.tournamentName = newName;
-                document.querySelector('.tournament-title').textContent = newName + ' ⚙️ 📋';
-                saveState();
-            }
-        }
-
-        // Logo upload
-        function uploadLogo(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const inner = document.getElementById('chipInner');
-                    inner.style.backgroundImage = `url(${e.target.result})`;
-                    inner.style.backgroundSize = 'cover';
-                    inner.style.backgroundPosition = 'center';
-                    inner.innerHTML = '';
-                };
-                reader.readAsDataURL(file);
+            const newName = prompt('Nome do torneio:', gameState.tournamentName);
+            if (newName && newName.trim()) {
+                gameState.tournamentName = newName.trim();
+                document.querySelector('.tournament-title').textContent = gameState.tournamentName;
+                document.getElementById('tournamentNameInput').value = gameState.tournamentName;
+                updateDisplay();
             }
         }
 
         // Storage
         function saveState() {
-            localStorage.setItem('fpc-tournament', JSON.stringify({ state, structure, payouts }));
+            localStorage.setItem('fpc-tournament', JSON.stringify({ gameState, structure, payouts }));
         }
 
         function loadState() {
@@ -977,36 +1351,36 @@
                 const saved = localStorage.getItem('fpc-tournament');
                 if (saved) {
                     const data = JSON.parse(saved);
-                    state = { ...state, ...data.state };
+                    gameState = { ...gameState, ...data.gameState };
                     structure = data.structure || structure;
                     payouts = data.payouts || payouts;
                     
-                    document.querySelector('.tournament-title').textContent = state.tournamentName + ' ⚙️ 📋';
-                    renderStructure();
+                    document.querySelector('.tournament-title').textContent = gameState.tournamentName;
+                    
+                    if (gameState.currentTab) {
+                        switchTab(gameState.currentTab);
+                    }
+                    
+                    renderStructureConfig();
                     renderPayouts();
                     updateDisplay();
                 }
             } catch (e) {}
         }
 
-        function goBack() {
-            if (confirm('Voltar ao lobby?')) {
-                if (state.isRunning) toggleTimer();
-                // Navigation logic here
-            }
-        }
-
         // Keyboard
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault();
-                toggleTimer();
-            } else if (e.code === 'ArrowRight') {
-                e.preventDefault();
-                nextLevel();
-            } else if (e.code === 'ArrowLeft') {
-                e.preventDefault();
-                prevLevel();
+            if (gameState.currentTab === 'timer') {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    toggleTimer();
+                } else if (e.code === 'ArrowRight') {
+                    e.preventDefault();
+                    nextLevel();
+                } else if (e.code === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevLevel();
+                }
             }
         });
 
